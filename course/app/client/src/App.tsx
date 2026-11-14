@@ -6,13 +6,16 @@ import { AppProvider, useApp } from "@app/client/src/state/AppContext";
 import type { AppState } from "@app/shared/types";
 import type { AppAction } from "@app/client/src/state/rootReducer";
 import { Backdrop, THEMES } from "@app/client/src/components/Art";
+import { themeById } from "@app/client/src/art/art";
+import { placeBoard, boardNotes } from "@app/shared/board";
+import { WallBoard } from "@app/client/src/components/WallBoard";
 import { useLocalStorage } from "@app/client/src/hooks/useLocalStorage";
 import { useHashRoute } from "@app/client/src/hooks/useHashRoute";
 import { useServerSync, type SyncStatus } from "@app/client/src/hooks/useServerSync";
 import { ErrorBoundary } from "@app/client/src/components/ErrorBoundary";
 import { LoginForm } from "@app/client/src/components/LoginForm";
 import { Playground } from "@app/client/src/Playground";
-import { ROUTES, ROUTE_NAMES } from "@app/client/src/views/shared";
+import { ROUTES, ROUTE_NAMES, todayKey } from "@app/client/src/views/shared";
 import { TasksView } from "@app/client/src/views/TasksView";
 import { DecisionsView } from "@app/client/src/views/DecisionsView";
 import { SettingsView } from "@app/client/src/views/SettingsView";
@@ -76,13 +79,23 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
   const [editId, setEditId] = useState<string | null>(null);
   const [backdrop, setBackdrop] = useLocalStorage("threadwork.backdrop", "coffee");
   useEffect(() => { document.documentElement.dataset.backdrop = backdrop; }, [backdrop]);
+  // In a room (any scene with a board), the tasks hang on the wall until you open them (8.8, 8.9).
+  const spot = themeById(backdrop).board;
+  const [open, setOpen] = useState(false);
+  const inRoom = !!spot && !open;
+  useEffect(() => {
+    if (!spot || !open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && !document.querySelector("[role=dialog]")) setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [spot, open]);
   return (
     <div className="shell">
       <Backdrop id={backdrop} />
       <header className="top">
         <strong className="brand">Threadwork</strong>
         <nav aria-label="Main" className="tabs">
-          {ROUTES.map(r => <a key={r} href={`#${r}`} aria-current={route === r ? "page" : undefined}>{ROUTE_NAMES[r]}</a>)}
+          {ROUTES.map(r => <a key={r} href={`#${r}`} aria-current={route === r && !inRoom ? "page" : undefined} onClick={() => setOpen(true)}>{ROUTE_NAMES[r]}</a>)}
         </nav>
         {status.kind === "conflict"
           ? <div className="banner" role="alert">Changed on another device too. Keep{" "}
@@ -93,13 +106,36 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
             {THEMES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
           </select></label>
       </header>
-      <main className="view">
-        <ErrorBoundary key={route} area={ROUTE_NAMES[route]}>
-          {route === "tasks" && <TasksView editId={editId} onEdited={() => setEditId(null)} />}
-          {route === "decisions" && <DecisionsView onEdit={id => { setEditId(id); navigate("tasks"); }} />}
-          {route === "settings" && <SettingsView onSignOut={onSignOut} syncText={syncText(status)} backdrop={backdrop} onBackdrop={setBackdrop} />}
-        </ErrorBoundary>
-      </main>
+      {inRoom
+        ? <ErrorBoundary area="The board"><Board spot={spot} onOpen={() => setOpen(true)} /></ErrorBoundary>
+        : <>
+            {spot && <button type="button" className="back-to-room" onClick={() => { setOpen(false); scrollTo(0, 0); }}>← Back to the room</button>}
+            <main className="view">
+              <ErrorBoundary key={route} area={ROUTE_NAMES[route]}>
+                {route === "tasks" && <TasksView editId={editId} onEdited={() => setEditId(null)} />}
+                {route === "decisions" && <DecisionsView onEdit={id => { setEditId(id); navigate("tasks"); }} />}
+                {route === "settings" && <SettingsView onSignOut={onSignOut} syncText={syncText(status)} backdrop={backdrop} onBackdrop={setBackdrop} />}
+              </ErrorBoundary>
+            </main>
+          </>}
+    </div>
+  );
+}
+
+/** Hangs your WallBoard (8.9) on the wall, at the spot placeBoard (8.8) works out for this screen. */
+function Board({ spot, onOpen }: { spot: NonNullable<ReturnType<typeof themeById>["board"]>; onOpen: () => void }) {
+  const { state } = useApp();
+  const [viewport, setViewport] = useState({ width: innerWidth, height: innerHeight });
+  useEffect(() => {
+    const on = () => setViewport({ width: innerWidth, height: innerHeight });
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  const header = document.querySelector<HTMLElement>(".top")?.offsetHeight ?? 56;
+  const rect = placeBoard(spot, viewport, header);
+  return (
+    <div className="board-spot" style={{ left: rect.left, top: rect.top, width: rect.width, height: rect.height, fontSize: rect.fontSize }}>
+      <WallBoard notes={boardNotes(state.tasks, todayKey())} look={spot.look} onOpen={onOpen} />
     </div>
   );
 }

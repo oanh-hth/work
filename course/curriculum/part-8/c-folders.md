@@ -72,4 +72,4 @@ Build `FolderView`: a section named "<name> folder" with *All folders*, the name
 
 ---
 
-[← 8b Stickers](b-stickers.md) · [Back to the course overview →](../../README.md)
+[← 8b Stickers](b-stickers.md) · [8d The board on the wall →](d-the-board.md)

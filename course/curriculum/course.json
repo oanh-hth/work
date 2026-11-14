@@ -229,6 +229,11 @@
           "id": "c",
           "file": "curriculum/part-8/c-folders.md",
           "title": "Folders and paper notes"
+        },
+        {
+          "id": "d",
+          "file": "curriculum/part-8/d-the-board.md",
+          "title": "The board on the wall"
         }
       ]
     }
@@ -705,6 +710,30 @@
       ],
       "lesson": "curriculum/part-8/c-folders.md",
       "test": "tests/part-8/8.7-folder-view.test.tsx"
+    },
+    {
+      "id": "8.8",
+      "part": "8",
+      "section": "d",
+      "slug": "board",
+      "title": "Where the board hangs",
+      "files": [
+        "app/shared/board.ts"
+      ],
+      "lesson": "curriculum/part-8/d-the-board.md",
+      "test": "tests/part-8/8.8-board.test.ts"
+    },
+    {
+      "id": "8.9",
+      "part": "8",
+      "section": "d",
+      "slug": "wall-board",
+      "title": "WallBoard",
+      "files": [
+        "app/client/src/components/WallBoard.tsx"
+      ],
+      "lesson": "curriculum/part-8/d-the-board.md",
+      "test": "tests/part-8/8.9-wall-board.test.tsx"
     }
   ]
 }

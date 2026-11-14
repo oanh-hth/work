@@ -25,7 +25,7 @@ So any host that runs Node and keeps files between restarts will do.
 
 ## Options
 
-- **A hosting service with a disk**, for example Render, Railway or Fly.io. Connect the repository, set the build command (`npm ci && npm run build`), the start command (`npm start`), the root directory (`learn-threadwork`), a volume, and the environment variables. Check their current free tiers; they change.
+- **A hosting service with a disk**, for example Render, Railway or Fly.io. Connect the repository, set the build command (`npm ci && npm run build`), the start command (`npm start`), the root directory (`course`), a volume, and the environment variables. Check their current free tiers; they change.
 - **A small computer at home** (an old laptop or a Raspberry Pi), reached from anywhere with **Tailscale**, which also gives you HTTPS. Your data never leaves your house.
 
 ## When it's done

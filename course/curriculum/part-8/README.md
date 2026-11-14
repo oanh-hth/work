@@ -1,12 +1,13 @@
 # Part 8: Themes, stickers and folders
 
-Make it yours: animated SVG scenes behind the app, stickers on decisions, and a shelf of illustrated folders with paper notes inside.
+Make it yours: animated SVG scenes behind the app, stickers on decisions, a shelf of illustrated folders with paper notes inside, and your tasks on a board on the wall.
 
 ## Sections
 
 - **[8a Animated SVG scenes](a-svg-scenes.md)** · exercises 8.1, 8.2
 - **[8b Stickers](b-stickers.md)** · exercises 8.3, 8.4
 - **[8c Folders and paper notes](c-folders.md)** · exercises 8.5, 8.6, 8.7
+- **[8d The board on the wall](d-the-board.md)** · exercises 8.8, 8.9
 
 Read the sections in order. Each ends with its exercises; do them before moving on. `npm run progress` shows where you are.
 
@@ -21,3 +22,5 @@ Tick each box (change `[ ]` to `[x]`) when you can explain it in your own words.
 - [ ] I can build a radio group with a roving tabindex, and one with real radio inputs
 - [ ] I can chain small reducers and explain why each must ignore other actions
 - [ ] I can pass values to CSS with custom properties from React
+- [ ] I can map a point from an SVG viewBox to the screen under `slice` (cover) scaling
+- [ ] I know what may go inside a `<button>`, and how to name a button that shows a lot

@@ -1,5 +1,7 @@
 # Threadwork
 
+> **Learn to build it yourself:** [`course/`](course/README.md) is a self-paced course in the style of Full Stack Open (TypeScript, React, Node.js): parts with lessons, tested exercises and a checklist. When you finish the last exercise, you have built Threadwork.
+
 A todo list that remembers what you learned. Built for iPad (installable from Safari) and computer.
 
 - **Simple tasks** you just tick off.
