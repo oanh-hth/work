@@ -1,5 +1,5 @@
 // Offline support for Threadwork. Network first so updates appear; cache as the fallback.
-const CACHE = 'threadwork-v7';
+const CACHE = 'threadwork-v8';
 const FILES = ['./', 'index.html', 'styles.css', 'manifest.webmanifest',
   'js/app.js', 'js/logic.js', 'js/art.js', 'js/categories.js', 'js/store.js', 'js/db.js', 'js/auth.js', 'js/cloud.js',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
@@ -15,6 +15,7 @@ self.addEventListener('fetch', e => {
     }
     return;
   }
-  e.respondWith(fetch(e.request).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
+  // no-cache: always ask the server for a newer copy (GitHub Pages lets browsers keep files for 10 minutes).
+  e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
     .catch(() => caches.match(e.request).then(r => r || caches.match('index.html'))));
 });

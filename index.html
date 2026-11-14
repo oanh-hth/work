@@ -52,6 +52,27 @@
 <div class="dialog card" id="dialog" hidden role="dialog" aria-modal="true"></div>
 <div id="toast" hidden role="status"></div>
 
+<script>
+// Safety net: if the app fails to start, show a message instead of an empty background.
+(function(){
+  function show(msg){
+    if(document.getElementById("start-error")) return;
+    var d=document.createElement("div"); d.id="start-error"; d.setAttribute("role","alert");
+    d.style.cssText="position:fixed;inset:auto 16px 16px;z-index:99;max-width:520px;margin:0 auto;padding:16px;border-radius:12px;background:#fff;color:#1D2227;box-shadow:0 10px 30px rgba(0,0,0,.3);font:16px/1.4 system-ui,sans-serif";
+    d.innerHTML="<b>Threadwork couldn't start.</b><br>An update may still be loading. <button type='button' style='margin-top:10px;display:block;padding:10px 16px;border-radius:999px;border:0;background:#2B3FC2;color:#fff;font:inherit'>Reload</button><small style='display:block;margin-top:8px;color:#646B72'></small>";
+    d.querySelector("small").textContent=msg||"";
+    d.querySelector("button").onclick=function(){ location.reload(); };
+    document.body.appendChild(d);
+  }
+  window.addEventListener("error",function(e){ show(e.message); });
+  window.addEventListener("unhandledrejection",function(e){ show(e.reason&&e.reason.message); });
+  // If nothing is showing a few seconds after load, offer the reload anyway.
+  window.addEventListener("load",function(){ setTimeout(function(){
+    var app=document.getElementById("app"), login=document.getElementById("login");
+    if(app&&app.hidden&&(!login||login.hidden)) show("");
+  },4000); });
+})();
+</script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>
