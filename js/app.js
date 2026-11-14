@@ -56,7 +56,7 @@ function placeBoard(){
   b.dataset.look=spot.look;
 }
 function renderBoard(){
-  const s=weekSummary(S.tasks,today()), next=sortTasks(S.tasks).filter(t=>t.status==="todo").slice(0,3);
+  const s=L.weekSummary(S.tasks,today()), next=L.sortTasks(S.tasks).filter(t=>t.status==="todo").slice(0,3);
   const done=S.tasks.filter(t=>t.doneAt===today()).length;
   $("#board-body").innerHTML=`
     <span class="b-title">Today</span>
