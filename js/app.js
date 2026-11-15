@@ -31,7 +31,7 @@ function applyBackdrop(){
   const q=$("#backdrop-pick"); if(q) q.value=t.id;
   applyRoom(); applyRoomState();
 }
-/** The room reflects your work: light by time of day, cups empty as today's tasks get done, the cat wakes when something is overdue. */
+/** The room reflects your work: light by time of day, cups empty as today's tasks get done, plants droop when something is overdue. */
 function applyRoomState(){
   const r=L.roomState(S.tasks,today(),new Date().getHours()), h=document.documentElement;
   h.dataset.time=r.time; h.dataset.mood=r.mood; h.style.setProperty("--left",r.left.toFixed(2));

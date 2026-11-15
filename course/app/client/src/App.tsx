@@ -126,7 +126,7 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
 }
 
 /**
- * The room reflects your work (9.4): the scene's light, cups and cat are styled in styles.css from
+ * The room reflects your work (9.4): the scene's light, cups and plants are styled in styles.css from
  * data-time and data-mood on <html> and the CSS variable --left. Until 9.4 is done the room just stays calm.
  */
 function useRoomState() {

@@ -1,6 +1,6 @@
 // Illustrations for Threadwork: background scenes, stickers and folders. Plain SVG strings, no libraries.
 // Each scene carries its own <style> with animations, and turns them off under prefers-reduced-motion.
-// Parts that react to your work have classes styled in styles.css: .sky (time of day), .drink and .steam (work left), .eyes-open / .eyes-closed (overdue).
+// Parts that react to your work have classes styled in styles.css: .sky (time of day), .drink and .steam (work left), .leaf (plants droop when something is overdue).
 
 const motionOff = p => `@media (prefers-reduced-motion: reduce){.${p} *{animation:none!important}}`;
 
@@ -42,7 +42,7 @@ ${motionOff("sc-coffee")}
 <g class="steam" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M20 -10 q-10 -15 0 -30 q10 -15 0 -30"/><path d="M36 -10 q-10 -15 0 -30 q10 -15 0 -30"/><path d="M52 -10 q-10 -15 0 -30 q10 -15 0 -30"/></g></g>
 <g transform="translate(460 480)"><path d="M0 0 h56 v40 a16 16 0 0 1 -16 16 h-24 a16 16 0 0 1 -16 -16z" fill="#2F6E8F"/><ellipse cx="28" cy="3" rx="26" ry="5" fill="#CDBFA8"/><clipPath id="cup-2"><ellipse cx="28" cy="3" rx="26" ry="5"/></clipPath><g clip-path="url(#cup-2)"><ellipse class="drink" cx="28" cy="3" rx="26" ry="5" fill="#6B3E25"/></g>
 <g class="steam" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M18 -8 q-8 -12 0 -24 q8 -12 0 -24"/><path d="M34 -8 q-8 -12 0 -24 q8 -12 0 -24"/></g></g>
-<g transform="translate(1080 420)"><rect x="-26" y="80" width="52" height="40" rx="6" fill="#C1693F"/><path d="M0 80 C-40 40 -30 0 0 -10 C30 0 40 40 0 80Z" fill="#3F7D4E"/><path d="M0 80 C-60 60 -70 20 -50 10 C-20 20 -10 50 0 80Z" fill="#4E9A60"/></g>
+<g transform="translate(1080 420)"><rect x="-26" y="80" width="52" height="40" rx="6" fill="#C1693F"/><path class="leaf c" style="transform-origin:0 80px" d="M0 80 C-40 40 -30 0 0 -10 C30 0 40 40 0 80Z" fill="#3F7D4E"/><path class="leaf l" style="transform-origin:0 80px" d="M0 80 C-60 60 -70 20 -50 10 C-20 20 -10 50 0 80Z" fill="#4E9A60"/></g>
 </svg>`;
 
 const cozy = `<svg class="sc-cozy" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -51,12 +51,10 @@ const cozy = `<svg class="sc-cozy" viewBox="0 0 1200 800" preserveAspectRatio="x
 .sc-cozy .star:nth-of-type(3n){animation-delay:-1s}.sc-cozy .star:nth-of-type(3n+1){animation-delay:-2s}
 .sc-cozy .halo{animation:cz-glow 4s ease-in-out infinite}
 .sc-cozy .bulb{animation:cz-twinkle 2.4s ease-in-out infinite}.sc-cozy .bulb:nth-child(2n){animation-delay:-1.2s}
-.sc-cozy .tail{transform-origin:0 0;animation:cz-tail 3s ease-in-out infinite}
-.sc-cozy .breath{transform-origin:50% 100%;animation:cz-breath 4s ease-in-out infinite}
+.sc-cozy .sway{transform-origin:0 0;animation:cz-sway 7s ease-in-out infinite}
 @keyframes cz-twinkle{50%{opacity:.25}}
+@keyframes cz-sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
 @keyframes cz-glow{50%{opacity:.6;transform:scale(.97)}}
-@keyframes cz-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
-@keyframes cz-breath{50%{transform:scaleY(1.04)}}
 ${motionOff("sc-cozy")}
 </style>
 <rect width="1200" height="800" fill="#3A3150"/>
@@ -76,9 +74,9 @@ ${motionOff("sc-cozy")}
 <g transform="translate(620 300)"><line x1="0" y1="0" x2="0" y2="300" stroke="#2A2230" stroke-width="8"/><ellipse cx="0" cy="300" rx="40" ry="10" fill="#2A2230"/>
 <ellipse class="halo" cx="0" cy="10" rx="150" ry="120" fill="#FFD9A0" opacity=".35"/><path d="M-60 30 L60 30 L36 -40 L-36 -40Z" fill="#F2C38B"/></g>
 <g transform="translate(160 460)"><rect x="0" y="40" width="340" height="140" rx="40" fill="#8E5C7E"/><rect x="20" y="0" width="300" height="110" rx="40" fill="#A86F95"/><rect x="-20" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="290" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/>
-<g transform="translate(180 30)"><g class="breath"><ellipse cx="0" cy="20" rx="70" ry="34" fill="#E09A5A"/><circle cx="-60" cy="4" r="26" fill="#E09A5A"/><path d="M-80 -16 l8 -20 l10 16Z M-52 -18 l10 -18 l6 20Z" fill="#E09A5A"/><path class="eyes-closed" d="M-70 4 q6 4 12 0 M-54 4 q6 4 12 0" stroke="#5A3A24" stroke-width="2" fill="none"/><g class="eyes-open" fill="#3B2A1A"><circle cx="-64" cy="5" r="3.4"/><circle cx="-48" cy="5" r="3.4"/></g></g>
-<g transform="translate(66 30)"><path class="tail" d="M0 0 C40 0 60 -30 50 -60" stroke="#E09A5A" stroke-width="14" fill="none" stroke-linecap="round"/></g></g></g>
+</g>
 <ellipse cx="420" cy="720" rx="360" ry="50" fill="#7A5F8A" opacity=".7"/>
+<g transform="translate(556 648)"><ellipse cx="0" cy="38" rx="40" ry="8" fill="#2A2230" opacity=".35"/><g class="sway"><path class="leaf l" style="transform-origin:0 0" d="M0 0 C-50 -20 -84 -70 -70 -120 C-34 -96 -10 -50 0 0Z" fill="#4E9A60"/><path class="leaf r" style="transform-origin:0 0" d="M0 0 C50 -20 84 -70 70 -120 C34 -96 10 -50 0 0Z" fill="#4E9A60"/><path class="leaf l" style="transform-origin:0 0" d="M0 0 C-34 -40 -44 -110 -24 -150 C-2 -112 4 -50 0 0Z" fill="#5FA571"/><path class="leaf r" style="transform-origin:0 0" d="M0 0 C34 -40 44 -110 24 -150 C2 -112 -4 -50 0 0Z" fill="#5FA571"/><path class="leaf c" style="transform-origin:0 0" d="M0 0 C-22 -50 -18 -130 0 -176 C18 -130 22 -50 0 0Z" fill="#3F7D4E"/></g><path d="M-30 -4 h60 l-8 44 h-44Z" fill="#C1693F"/><rect x="-34" y="-10" width="68" height="12" rx="4" fill="#D07A4E"/></g>
 </svg>`;
 
 const library = `<svg class="sc-library" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -125,7 +123,7 @@ ${motionOff("sc-rainy")}
 <g fill="#E6EEF6" opacity=".7">${Array.from({length:12},(_,i)=>`<ellipse class="slide" style="animation-delay:-${(i*0.9)%7}s" cx="${110+((i*89)%1000)}" cy="${80+((i*43)%160)}" rx="5" ry="8"/>`).join("")}</g>
 <rect x="60" y="40" width="1080" height="600" fill="none" stroke="#EDE6DA" stroke-width="22"/><line x1="600" y1="40" x2="600" y2="640" stroke="#EDE6DA" stroke-width="14"/><line x1="60" y1="340" x2="1140" y2="340" stroke="#EDE6DA" stroke-width="12"/>
 <rect x="20" y="636" width="1160" height="40" fill="#D9CFBF"/><rect y="676" width="1200" height="124" fill="#3B3F48"/>
-<g transform="translate(220 560)"><rect x="-34" y="40" width="68" height="44" rx="8" fill="#B7653E"/><path d="M0 40 C-30 0 -26 -40 0 -50 C26 -40 30 0 0 40Z" fill="#4E8A5E"/><path d="M0 40 C-56 24 -66 -10 -46 -20 C-20 -10 -10 16 0 40Z" fill="#5FA571"/><path d="M0 40 C56 24 66 -10 46 -20 C20 -10 10 16 0 40Z" fill="#5FA571"/></g>
+<g transform="translate(220 560)"><rect x="-34" y="40" width="68" height="44" rx="8" fill="#B7653E"/><path class="leaf c" style="transform-origin:0 40px" d="M0 40 C-30 0 -26 -40 0 -50 C26 -40 30 0 0 40Z" fill="#4E8A5E"/><path class="leaf l" style="transform-origin:0 40px" d="M0 40 C-56 24 -66 -10 -46 -20 C-20 -10 -10 16 0 40Z" fill="#5FA571"/><path class="leaf r" style="transform-origin:0 40px" d="M0 40 C56 24 66 -10 46 -20 C20 -10 10 16 0 40Z" fill="#5FA571"/></g>
 <g transform="translate(900 586)"><path d="M0 0 h64 v40 a18 18 0 0 1 -18 18 h-28 a18 18 0 0 1 -18 -18z" fill="#E7B34B"/><path d="M64 10 a12 12 0 0 1 0 24" fill="none" stroke="#E7B34B" stroke-width="7"/><ellipse cx="32" cy="3" rx="30" ry="5" fill="#CDBFA8"/><clipPath id="cup-3"><ellipse cx="32" cy="3" rx="30" ry="5"/></clipPath><g clip-path="url(#cup-3)"><ellipse class="drink" cx="32" cy="3" rx="30" ry="5" fill="#6B3E25"/></g>
 <g class="steam" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M22 -10 q-10 -14 0 -28 q10 -14 0 -28"/><path d="M42 -10 q-10 -14 0 -28 q10 -14 0 -28"/></g></g>
 </svg>`;

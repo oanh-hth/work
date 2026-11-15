@@ -205,9 +205,11 @@ html[data-time="night"] .backdrop .rays{display:none}
 /* Cups empty as today's tasks get done: --left goes from 1 (everything still to do) to 0. */
 .backdrop .drink{transform-box:fill-box;transform-origin:50% 50%;transform:translateY(calc((1 - var(--left,1)) * 3px)) scale(var(--left,1));transition:transform 1.2s ease}
 .backdrop .steam{opacity:var(--left,1);transition:opacity 1.2s}
-/* The cat sleeps while nothing is overdue. */
-.backdrop .eyes-open{display:none}
-html[data-mood="alert"] .backdrop .eyes-open{display:block}
-html[data-mood="alert"] .backdrop .eyes-closed{display:none}
-html[data-mood="alert"] .backdrop .sc-cozy .tail{animation-duration:.9s}
-@media (prefers-reduced-motion:reduce){.backdrop::after,.backdrop .sky,.backdrop .drink,.backdrop .steam{transition:none}}
+/* Plants stand tall while nothing is overdue, and droop when something is. */
+.backdrop .leaf{transition:transform 1.4s ease,filter 1.4s}
+html[data-mood="alert"] .backdrop .leaf{filter:saturate(.55) brightness(.92)}
+html[data-mood="alert"] .backdrop .leaf.l{transform:rotate(-30deg)}
+html[data-mood="alert"] .backdrop .leaf.r{transform:rotate(30deg)}
+html[data-mood="alert"] .backdrop .leaf.c{transform:rotate(9deg) scaleY(.82)}
+html[data-mood="alert"] .backdrop .sway{animation:none}
+@media (prefers-reduced-motion:reduce){.backdrop::after,.backdrop .sky,.backdrop .drink,.backdrop .steam,.backdrop .leaf{transition:none}}

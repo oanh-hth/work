@@ -6,7 +6,7 @@ Until now the room is wallpaper: the same animation whatever you do. In this las
 
 - the **light** follows the clock: a warm morning, a plain day, an orange evening, a dark night, with the sky in the windows to match;
 - the **coffee cups empty** as you finish today's tasks, and the steam fades with them;
-- the **cat** sleeps while nothing is overdue, and wakes up, eyes open and tail flicking, when something is.
+- the **plants** stand tall while nothing is overdue, and droop, their leaves falling outward and losing colour, when something is.
 
 None of this is a notification. It's information in the corner of your eye, which is the reason to have a room at all.
 
@@ -38,7 +38,7 @@ and the stylesheet does the rest. The parts of the drawings that react have clas
 
 ```css
 html[data-time="night"] .backdrop .sky { fill: #27325A }           /* the window's sky */
-html[data-mood="alert"] .backdrop .eyes-open { display: block }    /* the cat */
+html[data-mood="alert"] .backdrop .leaf.l { transform: rotate(-30deg) }   /* a plant's left leaves droop */
 .backdrop .drink { transform: scale(var(--left, 1)); transition: transform 1.2s }   /* the coffee */
 .backdrop .steam { opacity: var(--left, 1) }
 ```
@@ -47,7 +47,9 @@ Three techniques, each for a different kind of value:
 
 - a **data attribute** for one of a few named states (`time`, `mood`), matched with an attribute selector;
 - a **CSS variable** for a number (`--left`), used in `calc()`, `scale()` or `opacity`; CSS variables inherit, so setting it on `<html>` reaches inside the SVG;
-- a **transition**, so the cup drains instead of jumping, switched off under `prefers-reduced-motion`.
+- a **transition**, so the cup drains and the leaves sink instead of jumping, switched off under `prefers-reduced-motion`.
+
+One SVG detail: each leaf must turn around its **base**, not its middle. Every leaf path carries its own `transform-origin` (the point where it meets the pot), so one CSS rule can droop every plant in every scene.
 
 React never touches the SVG again. This is "derive, don't store" one level further: the picture is derived from state by the browser's own engine.
 
@@ -81,7 +83,7 @@ Run the tests for an exercise with `npm run ex <number>`; they re-run every time
 
 **Edit:** `app/shared/room.ts` · **Tests:** `tests/part-9/9.4-room.test.ts` · **Run:** `npm run ex 9.4`
 
-Write `timeOfDay(hour)` and `roomState(tasks, today, hour)`: the part of the day, the share of today's work still open (1 when there is none), and "alert" when something is overdue. Then, in the coffee shop, tick off your tasks and watch the cups; in the cozy room, give a task a due date in the past and look at the cat.
+Write `timeOfDay(hour)` and `roomState(tasks, today, hour)`: the part of the day, the share of today's work still open (1 when there is none), and "alert" when something is overdue. Then, in the coffee shop, tick off your tasks and watch the cups; then give a task a due date in the past and look at the plant.
 
 ---
 

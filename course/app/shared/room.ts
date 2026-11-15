@@ -6,7 +6,7 @@ export type TimeOfDay = "morning" | "day" | "evening" | "night";
 export interface RoomState {
   time: TimeOfDay;           // night before 6, morning before 11, day before 17, evening before 21, then night again
   left: number;              // the share of today's work still open, from 1 (a full cup) to 0 (empty)
-  mood: "calm" | "alert";    // alert when something is overdue: the cat wakes up
+  mood: "calm" | "alert";    // alert when something is overdue: the plants droop
 }
 
 /** Part of the day for an hour from 0 to 23. */
