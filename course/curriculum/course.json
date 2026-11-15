@@ -236,6 +236,29 @@
           "title": "The board on the wall"
         }
       ]
+    },
+    {
+      "id": "9",
+      "folder": "part-9",
+      "slug": "works-with-you",
+      "title": "An app that works with you",
+      "sections": [
+        {
+          "id": "a",
+          "file": "curriculum/part-9/a-earlier-decisions.md",
+          "title": "Earlier decisions"
+        },
+        {
+          "id": "b",
+          "file": "curriculum/part-9/b-add-from-the-board.md",
+          "title": "Add from the board"
+        },
+        {
+          "id": "c",
+          "file": "curriculum/part-9/c-a-room-that-reacts.md",
+          "title": "A room that reacts"
+        }
+      ]
     }
   ],
   "exercises": [
@@ -734,6 +757,54 @@
       ],
       "lesson": "curriculum/part-8/d-the-board.md",
       "test": "tests/part-8/8.9-wall-board.test.tsx"
+    },
+    {
+      "id": "9.1",
+      "part": "9",
+      "section": "a",
+      "slug": "related",
+      "title": "Earlier decisions on the same topic",
+      "files": [
+        "app/shared/related.ts"
+      ],
+      "lesson": "curriculum/part-9/a-earlier-decisions.md",
+      "test": "tests/part-9/9.1-related.test.ts"
+    },
+    {
+      "id": "9.2",
+      "part": "9",
+      "section": "a",
+      "slug": "related-decisions",
+      "title": "RelatedDecisions",
+      "files": [
+        "app/client/src/components/RelatedDecisions.tsx"
+      ],
+      "lesson": "curriculum/part-9/a-earlier-decisions.md",
+      "test": "tests/part-9/9.2-related-decisions.test.tsx"
+    },
+    {
+      "id": "9.3",
+      "part": "9",
+      "section": "b",
+      "slug": "board-quick-add",
+      "title": "BoardQuickAdd",
+      "files": [
+        "app/client/src/components/BoardQuickAdd.tsx"
+      ],
+      "lesson": "curriculum/part-9/b-add-from-the-board.md",
+      "test": "tests/part-9/9.3-board-quick-add.test.tsx"
+    },
+    {
+      "id": "9.4",
+      "part": "9",
+      "section": "c",
+      "slug": "room",
+      "title": "The room reflects your work",
+      "files": [
+        "app/shared/room.ts"
+      ],
+      "lesson": "curriculum/part-9/c-a-room-that-reacts.md",
+      "test": "tests/part-9/9.4-room.test.ts"
     }
   ]
 }

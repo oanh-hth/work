@@ -1,5 +1,6 @@
 // Given: the illustrations for Threadwork: background scenes, stickers and folders. Plain SVG strings, no libraries.
 // Each scene carries its own <style> with animations, and turns them off under prefers-reduced-motion.
+// Parts that react to your work (Part 9c) have classes styled in styles.css: .sky (time of day), .drink and .steam (work left), .eyes-open / .eyes-closed (overdue).
 
 const motionOff = (p: string) => `@media (prefers-reduced-motion: reduce){.${p} *{animation:none!important}}`;
 
@@ -20,7 +21,7 @@ ${motionOff("sc-coffee")}
 </style>
 <rect width="1200" height="800" fill="#E8D5BE"/>
 <rect y="0" width="1200" height="40" fill="#5B3A2A"/>
-<g><rect x="70" y="120" width="420" height="380" rx="10" fill="#9CC7E0"/>
+<g><rect class="sky" x="70" y="120" width="420" height="380" rx="10" fill="#9CC7E0"/>
 <clipPath id="cf-win"><rect x="70" y="120" width="420" height="380" rx="10"/></clipPath>
 <g clip-path="url(#cf-win)"><rect x="70" y="380" width="420" height="120" fill="#B9D7A8"/>
 <g class="cloud"><ellipse cx="140" cy="200" rx="60" ry="22" fill="#fff" opacity=".9"/><ellipse cx="180" cy="188" rx="40" ry="20" fill="#fff" opacity=".9"/></g>
@@ -37,9 +38,9 @@ ${motionOff("sc-coffee")}
 <rect y="560" width="1200" height="240" fill="#8A5A3C"/><rect y="540" width="1200" height="34" fill="#6E452E"/>
 <g transform="translate(800 400)"><rect width="200" height="140" rx="10" fill="#B8BEC4"/><rect x="20" y="20" width="160" height="40" rx="6" fill="#7E868E"/>
 <circle cx="60" cy="40" r="10" fill="#2F2F33"/><circle cx="140" cy="40" r="10" fill="#2F2F33"/><rect x="70" y="80" width="60" height="20" fill="#2F2F33"/></g>
-<g transform="translate(250 470)"><path d="M0 0 h70 v50 a20 20 0 0 1 -20 20 h-30 a20 20 0 0 1 -20 -20z" fill="#F7F1E8"/><path d="M70 12 a14 14 0 0 1 0 28" fill="none" stroke="#F7F1E8" stroke-width="8"/><ellipse cx="35" cy="4" rx="32" ry="6" fill="#6B3E25"/>
+<g transform="translate(250 470)"><path d="M0 0 h70 v50 a20 20 0 0 1 -20 20 h-30 a20 20 0 0 1 -20 -20z" fill="#F7F1E8"/><path d="M70 12 a14 14 0 0 1 0 28" fill="none" stroke="#F7F1E8" stroke-width="8"/><ellipse cx="35" cy="4" rx="32" ry="6" fill="#CDBFA8"/><clipPath id="cup-1"><ellipse cx="35" cy="4" rx="32" ry="6"/></clipPath><g clip-path="url(#cup-1)"><ellipse class="drink" cx="35" cy="4" rx="32" ry="6" fill="#6B3E25"/></g>
 <g class="steam" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M20 -10 q-10 -15 0 -30 q10 -15 0 -30"/><path d="M36 -10 q-10 -15 0 -30 q10 -15 0 -30"/><path d="M52 -10 q-10 -15 0 -30 q10 -15 0 -30"/></g></g>
-<g transform="translate(460 480)"><path d="M0 0 h56 v40 a16 16 0 0 1 -16 16 h-24 a16 16 0 0 1 -16 -16z" fill="#2F6E8F"/><ellipse cx="28" cy="3" rx="26" ry="5" fill="#6B3E25"/>
+<g transform="translate(460 480)"><path d="M0 0 h56 v40 a16 16 0 0 1 -16 16 h-24 a16 16 0 0 1 -16 -16z" fill="#2F6E8F"/><ellipse cx="28" cy="3" rx="26" ry="5" fill="#CDBFA8"/><clipPath id="cup-2"><ellipse cx="28" cy="3" rx="26" ry="5"/></clipPath><g clip-path="url(#cup-2)"><ellipse class="drink" cx="28" cy="3" rx="26" ry="5" fill="#6B3E25"/></g>
 <g class="steam" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M18 -8 q-8 -12 0 -24 q8 -12 0 -24"/><path d="M34 -8 q-8 -12 0 -24 q8 -12 0 -24"/></g></g>
 <g transform="translate(1080 420)"><rect x="-26" y="80" width="52" height="40" rx="6" fill="#C1693F"/><path d="M0 80 C-40 40 -30 0 0 -10 C30 0 40 40 0 80Z" fill="#3F7D4E"/><path d="M0 80 C-60 60 -70 20 -50 10 C-20 20 -10 50 0 80Z" fill="#4E9A60"/></g>
 </svg>`;
@@ -75,7 +76,7 @@ ${motionOff("sc-cozy")}
 <g transform="translate(620 300)"><line x1="0" y1="0" x2="0" y2="300" stroke="#2A2230" stroke-width="8"/><ellipse cx="0" cy="300" rx="40" ry="10" fill="#2A2230"/>
 <ellipse class="halo" cx="0" cy="10" rx="150" ry="120" fill="#FFD9A0" opacity=".35"/><path d="M-60 30 L60 30 L36 -40 L-36 -40Z" fill="#F2C38B"/></g>
 <g transform="translate(160 460)"><rect x="0" y="40" width="340" height="140" rx="40" fill="#8E5C7E"/><rect x="20" y="0" width="300" height="110" rx="40" fill="#A86F95"/><rect x="-20" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="290" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/>
-<g transform="translate(180 30)"><g class="breath"><ellipse cx="0" cy="20" rx="70" ry="34" fill="#E09A5A"/><circle cx="-60" cy="4" r="26" fill="#E09A5A"/><path d="M-80 -16 l8 -20 l10 16Z M-52 -18 l10 -18 l6 20Z" fill="#E09A5A"/><path d="M-70 4 q6 4 12 0 M-54 4 q6 4 12 0" stroke="#5A3A24" stroke-width="2" fill="none"/></g>
+<g transform="translate(180 30)"><g class="breath"><ellipse cx="0" cy="20" rx="70" ry="34" fill="#E09A5A"/><circle cx="-60" cy="4" r="26" fill="#E09A5A"/><path d="M-80 -16 l8 -20 l10 16Z M-52 -18 l10 -18 l6 20Z" fill="#E09A5A"/><path class="eyes-closed" d="M-70 4 q6 4 12 0 M-54 4 q6 4 12 0" stroke="#5A3A24" stroke-width="2" fill="none"/><g class="eyes-open" fill="#3B2A1A"><circle cx="-64" cy="5" r="3.4"/><circle cx="-48" cy="5" r="3.4"/></g></g>
 <g transform="translate(66 30)"><path class="tail" d="M0 0 C40 0 60 -30 50 -60" stroke="#E09A5A" stroke-width="14" fill="none" stroke-linecap="round"/></g></g></g>
 <ellipse cx="420" cy="720" rx="360" ry="50" fill="#7A5F8A" opacity=".7"/>
 </svg>`;
@@ -94,7 +95,7 @@ ${motionOff("sc-library")}
 <rect y="640" width="1200" height="160" fill="#6B4A36"/>
 <g id="lb-shelf">${[0,1,2,3].map(r=>`<rect x="0" y="${r*150+40}" width="1200" height="14" fill="#2B1F1A"/>`).join("")}</g>
 ${[0,1,2,3].map(r=>{let x=10,out="";const cols=["#B5564A","#4E7FD9","#E8C35A","#5DA27A","#9A6FD0","#D98C4E","#C9B79C","#7AA5A0"];let i=r*3;while(x<1190){const w=18+((i*7)%22),h=90+((i*13)%40);out+=`<rect x="${x}" y="${r*150+40-h}" width="${w}" height="${h}" fill="${cols[i%cols.length]!}"/>`;x+=w+3+((i*5)%9===0?40:0);i++;}return out;}).join("")}
-<g transform="translate(420 70)"><path d="M0 520 V160 A180 160 0 0 1 360 160 V520Z" fill="#CFE4F0"/><path d="M0 520 V160 A180 160 0 0 1 360 160 V520Z" fill="none" stroke="#2B1F1A" stroke-width="16"/>
+<g transform="translate(420 70)"><path class="sky" d="M0 520 V160 A180 160 0 0 1 360 160 V520Z" fill="#CFE4F0"/><path d="M0 520 V160 A180 160 0 0 1 360 160 V520Z" fill="none" stroke="#2B1F1A" stroke-width="16"/>
 <line x1="180" y1="0" x2="180" y2="520" stroke="#2B1F1A" stroke-width="10"/><line x1="0" y1="300" x2="360" y2="300" stroke="#2B1F1A" stroke-width="10"/>
 <g class="rays" opacity=".55"><path d="M60 520 L-40 800 L120 800Z" fill="#FFF3C9"/><path d="M200 520 L160 800 L320 800Z" fill="#FFF3C9"/><path d="M320 520 L380 800 L520 800Z" fill="#FFF3C9"/></g></g>
 <g fill="#FFF3C9">${Array.from({length:16},(_,i)=>`<circle class="mote" cx="${470+((i*53)%300)}" cy="${520+((i*37)%220)}" r="${1.5+(i%3)}"/>`).join("")}</g>
@@ -125,7 +126,7 @@ ${motionOff("sc-rainy")}
 <rect x="60" y="40" width="1080" height="600" fill="none" stroke="#EDE6DA" stroke-width="22"/><line x1="600" y1="40" x2="600" y2="640" stroke="#EDE6DA" stroke-width="14"/><line x1="60" y1="340" x2="1140" y2="340" stroke="#EDE6DA" stroke-width="12"/>
 <rect x="20" y="636" width="1160" height="40" fill="#D9CFBF"/><rect y="676" width="1200" height="124" fill="#3B3F48"/>
 <g transform="translate(220 560)"><rect x="-34" y="40" width="68" height="44" rx="8" fill="#B7653E"/><path d="M0 40 C-30 0 -26 -40 0 -50 C26 -40 30 0 0 40Z" fill="#4E8A5E"/><path d="M0 40 C-56 24 -66 -10 -46 -20 C-20 -10 -10 16 0 40Z" fill="#5FA571"/><path d="M0 40 C56 24 66 -10 46 -20 C20 -10 10 16 0 40Z" fill="#5FA571"/></g>
-<g transform="translate(900 586)"><path d="M0 0 h64 v40 a18 18 0 0 1 -18 18 h-28 a18 18 0 0 1 -18 -18z" fill="#E7B34B"/><path d="M64 10 a12 12 0 0 1 0 24" fill="none" stroke="#E7B34B" stroke-width="7"/><ellipse cx="32" cy="3" rx="30" ry="5" fill="#6B3E25"/>
+<g transform="translate(900 586)"><path d="M0 0 h64 v40 a18 18 0 0 1 -18 18 h-28 a18 18 0 0 1 -18 -18z" fill="#E7B34B"/><path d="M64 10 a12 12 0 0 1 0 24" fill="none" stroke="#E7B34B" stroke-width="7"/><ellipse cx="32" cy="3" rx="30" ry="5" fill="#CDBFA8"/><clipPath id="cup-3"><ellipse cx="32" cy="3" rx="30" ry="5"/></clipPath><g clip-path="url(#cup-3)"><ellipse class="drink" cx="32" cy="3" rx="30" ry="5" fill="#6B3E25"/></g>
 <g class="steam" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M22 -10 q-10 -14 0 -28 q10 -14 0 -28"/><path d="M42 -10 q-10 -14 0 -28 q10 -14 0 -28"/></g></g>
 </svg>`;
 

@@ -66,4 +66,4 @@ Build `WallBoard`: one button named "Open Threadwork: 4 to do, 2 done today", wi
 
 ---
 
-[← 8c Folders and paper notes](c-folders.md) · [Back to the course overview →](../../README.md)
+[← 8c Folders and paper notes](c-folders.md) · [Part 9: An app that works with you →](../part-9/README.md)

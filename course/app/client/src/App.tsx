@@ -9,13 +9,15 @@ import { Backdrop, THEMES } from "@app/client/src/components/Art";
 import { themeById } from "@app/client/src/art/art";
 import { placeBoard, boardNotes } from "@app/shared/board";
 import { WallBoard } from "@app/client/src/components/WallBoard";
+import { BoardQuickAdd } from "@app/client/src/components/BoardQuickAdd";
+import { roomState } from "@app/shared/room";
 import { useLocalStorage } from "@app/client/src/hooks/useLocalStorage";
 import { useHashRoute } from "@app/client/src/hooks/useHashRoute";
 import { useServerSync, type SyncStatus } from "@app/client/src/hooks/useServerSync";
 import { ErrorBoundary } from "@app/client/src/components/ErrorBoundary";
 import { LoginForm } from "@app/client/src/components/LoginForm";
 import { Playground } from "@app/client/src/Playground";
-import { ROUTES, ROUTE_NAMES, todayKey } from "@app/client/src/views/shared";
+import { ROUTES, ROUTE_NAMES, todayKey, newId } from "@app/client/src/views/shared";
 import { TasksView } from "@app/client/src/views/TasksView";
 import { DecisionsView } from "@app/client/src/views/DecisionsView";
 import { SettingsView } from "@app/client/src/views/SettingsView";
@@ -79,6 +81,7 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
   const [editId, setEditId] = useState<string | null>(null);
   const [backdrop, setBackdrop] = useLocalStorage("threadwork.backdrop", "coffee");
   useEffect(() => { document.documentElement.dataset.backdrop = backdrop; }, [backdrop]);
+  useRoomState();
   // In a room (any scene with a board), the tasks hang on the wall until you open them (8.8, 8.9).
   const spot = themeById(backdrop).board;
   const [open, setOpen] = useState(false);
@@ -122,9 +125,27 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
   );
 }
 
+/**
+ * The room reflects your work (9.4): the scene's light, cups and cat are styled in styles.css from
+ * data-time and data-mood on <html> and the CSS variable --left. Until 9.4 is done the room just stays calm.
+ */
+function useRoomState() {
+  const { state } = useApp();
+  const [hour, setHour] = useState(() => new Date().getHours());
+  useEffect(() => { const t = setInterval(() => setHour(new Date().getHours()), 5 * 60 * 1000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    const html = document.documentElement;
+    try {
+      const r = roomState(state.tasks, todayKey(), hour);
+      html.dataset.time = r.time; html.dataset.mood = r.mood; html.style.setProperty("--left", r.left.toFixed(2));
+    } catch { delete html.dataset.time; delete html.dataset.mood; html.style.removeProperty("--left"); }
+  }, [state.tasks, hour]);
+}
+
 /** Hangs your WallBoard (8.9) on the wall, at the spot placeBoard (8.8) works out for this screen. */
 function Board({ spot, onOpen }: { spot: NonNullable<ReturnType<typeof themeById>["board"]>; onOpen: () => void }) {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
+  const [adding, setAdding] = useState(false);
   const [viewport, setViewport] = useState({ width: innerWidth, height: innerHeight });
   useEffect(() => {
     const on = () => setViewport({ width: innerWidth, height: innerHeight });
@@ -136,6 +157,14 @@ function Board({ spot, onOpen }: { spot: NonNullable<ReturnType<typeof themeById
   return (
     <div className="board-spot" style={{ left: rect.left, top: rect.top, width: rect.width, height: rect.height, fontSize: rect.fontSize }}>
       <WallBoard notes={boardNotes(state.tasks, todayKey())} look={spot.look} onOpen={onOpen} />
+      {/* A sibling of the board, not inside it: a button can't hold another button (9.3). */}
+      <button type="button" className="board-add" aria-expanded={adding} aria-label={adding ? "Close add a task" : "Add a task"} onClick={() => setAdding(a => !a)}>{adding ? "×" : "+"}</button>
+      {adding && (
+        <ErrorBoundary area="Adding from the board">
+          <BoardQuickAdd onClose={() => setAdding(false)}
+            onAdd={(title, complexity) => dispatch({ type: "add", id: newId(), title, complexity, due: null, today: todayKey() })} />
+        </ErrorBoundary>
+      )}
     </div>
   );
 }

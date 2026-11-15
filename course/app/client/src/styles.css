@@ -174,3 +174,40 @@ html:not([data-backdrop="plain"]) .task-list h2,html:not([data-backdrop="plain"]
 .b-note{font-size:.88em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .b-open{margin-top:auto;font-size:.78em;opacity:.8}
 @media (prefers-reduced-motion:reduce){.board{transition:none}.board:hover,.board:focus-visible{transform:none}}
+
+/* ---------- Earlier decisions, shown while you decide (9.2) ---------- */
+.related{background:var(--surface);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.related h3{font-size:.9rem;margin:0 0 6px}
+.related ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:.85rem}
+.related li{display:flex;gap:8px;align-items:flex-start}
+.related time{color:var(--muted)}
+
+/* ---------- Add a task from the board (9.3) ---------- */
+.board-add{position:absolute;right:-10px;bottom:-10px;z-index:1;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;border:3px solid #fff;background:var(--accent);color:#fff;font-size:1.5rem;font-weight:700;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.35);cursor:pointer}
+.board-form{position:absolute;left:0;top:calc(100% + 10px);width:max(100%,300px);max-width:calc(100vw - 16px);display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px;border-radius:14px;font-size:1rem;
+  background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.board-form > input{flex:1 1 150px;min-width:0;width:auto}
+.board-form .check{display:flex;gap:6px;align-items:center;font-size:.85rem;font-weight:400;white-space:nowrap;margin:0}
+.board-form .check input{width:22px;height:22px;min-height:0;flex:none;accent-color:var(--accent)}
+.board-form button{flex:none}
+
+/* ---------- The room reflects your work (9.4) ---------- */
+/* Light by time of day: a soft wash over the whole scene, and the sky in the windows. */
+.backdrop::after{content:"";position:absolute;inset:0;pointer-events:none;transition:background 2s}
+html[data-time="morning"]:not([data-backdrop="plain"]) .backdrop::after{background:linear-gradient(rgba(255,214,140,.24),rgba(255,214,140,0) 70%)}
+html[data-time="evening"]:not([data-backdrop="plain"]) .backdrop::after{background:linear-gradient(rgba(255,128,64,.2),rgba(120,60,120,.14))}
+html[data-time="night"]:not([data-backdrop="plain"]) .backdrop::after{background:rgba(12,16,48,.36)}
+.backdrop .sky{transition:fill 2s}
+html[data-time="morning"] .backdrop .sky{fill:#BFE0F2}
+html[data-time="evening"] .backdrop .sky{fill:#F2B28C}
+html[data-time="night"] .backdrop .sky{fill:#27325A}
+html[data-time="night"] .backdrop .rays{display:none}
+/* Cups empty as today's tasks get done: --left goes from 1 (everything still to do) to 0. */
+.backdrop .drink{transform-box:fill-box;transform-origin:50% 50%;transform:translateY(calc((1 - var(--left,1)) * 3px)) scale(var(--left,1));transition:transform 1.2s ease}
+.backdrop .steam{opacity:var(--left,1);transition:opacity 1.2s}
+/* The cat sleeps while nothing is overdue. */
+.backdrop .eyes-open{display:none}
+html[data-mood="alert"] .backdrop .eyes-open{display:block}
+html[data-mood="alert"] .backdrop .eyes-closed{display:none}
+html[data-mood="alert"] .backdrop .sc-cozy .tail{animation-duration:.9s}
+@media (prefers-reduced-motion:reduce){.backdrop::after,.backdrop .sky,.backdrop .drink,.backdrop .steam{transition:none}}

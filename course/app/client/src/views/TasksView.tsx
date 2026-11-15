@@ -1,10 +1,15 @@
-// Given: the Tasks page. Uses weekSummary (2.4), QuickCapture (3.2), TaskList (3.3), OutcomeForm (3.4) and StickerPicker (8.4).
+// Given: the Tasks page. Uses weekSummary (2.4), QuickCapture (3.2), TaskList (3.3), OutcomeForm (3.4), StickerPicker (8.4)
+// and, while you record a result, the earlier decisions that may help (9.1, 9.2).
 import { useEffect, useState } from "react";
 import { useApp } from "@app/client/src/state/AppContext";
 import { QuickCapture } from "@app/client/src/components/QuickCapture";
 import { TaskList } from "@app/client/src/components/TaskList";
 import { OutcomeForm } from "@app/client/src/components/OutcomeForm";
 import { StickerPicker } from "@app/client/src/components/Stickers";
+import { RelatedDecisions } from "@app/client/src/components/RelatedDecisions";
+import { relatedDecisions } from "@app/shared/related";
+import { decisionsOf } from "@app/shared/decisions";
+import type { Task } from "@app/shared/types";
 import { ErrorBoundary } from "@app/client/src/components/ErrorBoundary";
 import { weekSummary } from "@app/shared/summary";
 import { categoryById } from "@app/shared/categories";
@@ -23,6 +28,15 @@ function SummaryBar() {
       {s.topCategory && <div className="wide"><b>{categoryById(s.topCategory.id)?.name ?? s.topCategory.id}</b><span>most decided this week</span></div>}
     </section>
   );
+}
+
+/** Earlier decisions with the same category (when the task already has one) or words in common with its title. */
+function Related({ task }: { task: Task }) {
+  const { state } = useApp();
+  const category = task.outcome?.category ?? "";
+  const list = relatedDecisions(decisionsOf(state.tasks), { category, title: task.title, excludeId: task.id });
+  const topic = category && list.some(d => d.category === category) ? categoryById(category)?.name : undefined;
+  return <RelatedDecisions decisions={list} topic={topic} />;
 }
 
 export function TasksView({ editId, onEdited }: { editId: string | null; onEdited: () => void }) {
@@ -58,6 +72,7 @@ export function TasksView({ editId, onEdited }: { editId: string | null; onEdite
                   close();
                 }} />
             </ErrorBoundary>
+            <ErrorBoundary area="Earlier decisions"><Related task={task} /></ErrorBoundary>
             <ErrorBoundary area="Stickers"><StickerPicker value={sticker} onChange={setSticker} /></ErrorBoundary>
           </div>
         </div>

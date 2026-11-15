@@ -5,7 +5,8 @@ A self-paced course in **TypeScript, React and Node.js**, in the style of [Full 
 - every task is **simple** (just tick it) or **complex**;
 - when you finish a complex task you write down the **result** and your **decision**, and file it under a **web development category** (HTML, CSS, Layout, Accessibility, React, State management, Performance, Testing, Node.js, APIs, Deployment…);
 - the **decision log** lets you filter everything you've decided by group, category or text, and export it as Markdown;
-- it's a nice place to be: **animated rooms** (coffee shop, cozy room, library, rainy window, night city) with your tasks on a **board on the wall**, **stickers** on decisions, and a shelf of **illustrated folders**, one per topic.
+- it **hands decisions back**: when you record a new result, earlier decisions on the same topic appear next to it;
+- it's a nice place to be: **animated rooms** (coffee shop, cozy room, library, rainy window, night city) that reflect your day (light by the clock, coffee cups that empty as you work, a cat that wakes when something is overdue), with your tasks on a **board on the wall** you can add to, **stickers** on decisions, and a shelf of **illustrated folders**, one per topic.
 
 The course is split into **parts**, and each part into **sections**. A section teaches the ideas you need, with examples from Threadwork, and ends with **exercises** that build the next piece of the app. Most exercises have tests that tell you when you're done. **When you finish the last exercise, Threadwork is finished**, deployed and on your iPad's home screen.
 
@@ -22,8 +23,9 @@ The course is split into **parts**, and each part into **sections**. A section t
 | **[Part 6: A Node.js server](curriculum/part-6/README.md)** | A Node.js server with Express: a REST API, accounts with safe passwords and tokens, and data saved in files with conflict checks. | [6a](curriculum/part-6/a-express.md) · [6b](curriculum/part-6/b-rest-api.md) · [6c](curriculum/part-6/c-accounts.md) · [6d](curriculum/part-6/d-storage.md) | 6.1–6.4 |
 | **[Part 7: Full stack and shipping](curriculum/part-7/README.md)** | Full stack and shipping: the API client, sync between devices, sign-in, offline support, installing on the iPad and deploying. | [7a](curriculum/part-7/a-api-client.md) · [7b](curriculum/part-7/b-sync.md) · [7c](curriculum/part-7/c-sign-in.md) · [7d](curriculum/part-7/d-offline-and-ipad.md) · [7e](curriculum/part-7/e-deploy.md) | 7.1–7.6 |
 | **[Part 8: Themes, stickers and folders](curriculum/part-8/README.md)** | Make it yours: animated SVG scenes behind the app, stickers on decisions, a shelf of illustrated folders, and your tasks on a board on the wall. | [8a](curriculum/part-8/a-svg-scenes.md) · [8b](curriculum/part-8/b-stickers.md) · [8c](curriculum/part-8/c-folders.md) · [8d](curriculum/part-8/d-the-board.md) | 8.1–8.9 |
+| **[Part 9: An app that works with you](curriculum/part-9/README.md)** | The app gives back: earlier decisions appear when you decide again, you add tasks from the board, and the room reflects your day: light by the clock, cups that empty, a cat that wakes. | [9a](curriculum/part-9/a-earlier-decisions.md) · [9b](curriculum/part-9/b-add-from-the-board.md) · [9c](curriculum/part-9/c-a-room-that-reacts.md) | 9.1–9.4 |
 
-42 exercises: 37 with automatic tests, 5 you tick yourself (like installing on the iPad). Plan on 30–45 hours if these tools are new to you.
+46 exercises: 41 with automatic tests, 5 you tick yourself (like installing on the iPad). Plan on 30–45 hours if these tools are new to you.
 
 ## Tech stack
 
@@ -36,7 +38,7 @@ The course is split into **parts**, and each part into **sections**. A section t
 | Accounts | Password hashing with Node's `crypto` (scrypt) and signed tokens | Part 6c |
 | Storage | JSON files on the server, browser storage on the device, with conflict checks | Parts 4, 6d, 7b |
 | Offline and iPad | A service worker and a web app manifest (installable PWA) | Part 7d |
-| Graphics | Hand-written **SVG** with CSS animations, no libraries | Part 8 |
+| Graphics | Hand-written **SVG** with CSS animations, driven by data attributes and CSS variables, no libraries | Parts 8–9 |
 | Tests | **Vitest**, **Testing Library** (React and user-event), **Supertest** for the API | every exercise |
 
 No UI framework, no CSS library, no state library: each part shows how far the platform and React go on their own.
