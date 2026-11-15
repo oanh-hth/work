@@ -29,8 +29,14 @@ function applyBackdrop(){
   document.documentElement.dataset.backdrop=t.id;
   if(shownBackdrop!==t.id){ el.innerHTML=t.svg; shownBackdrop=t.id; }
   const q=$("#backdrop-pick"); if(q) q.value=t.id;
-  applyRoom();
+  applyRoom(); applyRoomState();
 }
+/** The room reflects your work: light by time of day, cups empty as today's tasks get done, the cat wakes when something is overdue. */
+function applyRoomState(){
+  const r=L.roomState(S.tasks,today(),new Date().getHours()), h=document.documentElement;
+  h.dataset.time=r.time; h.dataset.mood=r.mood; h.style.setProperty("--left",r.left.toFixed(2));
+}
+setInterval(()=>{ if(signedIn) applyRoomState(); },5*60*1000);
 
 /* ---------------- The board on the wall ---------------- */
 // In a room, the main panel is put away and a board hangs on the wall with a summary. Tap it to open the panel.
@@ -41,7 +47,8 @@ function applyRoom(){
   document.documentElement.classList.toggle("room",room);
   document.documentElement.classList.toggle("can-close",inRoom()&&panelOpen);
   const b=$("#board"); if(!b) return;
-  b.hidden=!room;
+  b.hidden=!room; $("#board-add").hidden=!room;
+  if(!room) toggleBoardForm(false);
   if(room){ renderBoard(); placeBoard(); }
 }
 /** Scenes fill the screen like object-fit: cover. Map the board's scene coordinates to the screen. */
@@ -54,6 +61,15 @@ function placeBoard(){
   x=Math.min(Math.max(8,x),W-w-8); y=Math.min(Math.max(top,y),H-h-8);          // always fully on screen
   Object.assign(b.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px",fontSize:Math.max(11,Math.min(16,w/20))+"px"});
   b.dataset.look=spot.look;
+  // The + sits on the board's bottom right corner; the quick-add form opens just under the board (or above the screen's edge).
+  Object.assign($("#board-add").style,{left:(x+w-34)+"px",top:(y+h-34)+"px"});
+  const fw=Math.min(Math.max(w,300),W-16);
+  Object.assign($("#board-form").style,{left:Math.min(Math.max(8,x),W-fw-8)+"px",top:Math.min(y+h+10,H-64)+"px",width:fw+"px"});
+}
+function toggleBoardForm(show){
+  const f=$("#board-form"), a=$("#board-add"); if(!f||!a) return;
+  f.hidden=!show; a.setAttribute("aria-expanded",String(show)); a.textContent=show?"×":"+"; a.setAttribute("aria-label",show?"Close add a task":"Add a task");
+  if(show){ placeBoard(); $("#board-input").focus(); }
 }
 function renderBoard(){
   const s=L.weekSummary(S.tasks,today()), next=L.sortTasks(S.tasks).filter(t=>t.status==="todo").slice(0,3);
@@ -266,7 +282,7 @@ const filter={group:null,category:null,text:""};
 let showAllDone=false, recording=null, searchT=null, restoreData=null;
 
 function render(){
-  const v=cur();
+  const v=cur(); applyRoomState();
   if(inRoom()&&!panelOpen){ renderBoard(); }
   document.querySelectorAll(".tabs a").forEach(a=>{ if(a.getAttribute("href")==="#"+v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
   $("#view").innerHTML=R[v]();
@@ -277,6 +293,7 @@ function render(){
 const R={};
 const plural=(n,one,many)=>`${n} ${n===1?one:many}`;
 
+const relatedCount=t=>L.relatedDecisions(L.decisionsOf(S.tasks),{title:t.title,excludeId:t.id}).length;
 function taskItem(t){
   const done=t.status==="done", due=done?"":L.dueLabel(t.due,today()), cat=t.outcome&&categoryById(t.outcome.category);
   return `<li class="task-item" data-status="${t.status}" data-complexity="${t.complexity}">
@@ -285,6 +302,7 @@ function taskItem(t){
       <span class="title">${esc(t.title)}</span>
       <span class="meta">
         ${t.complexity==="complex"?`<span class="pill complex">Complex</span>`:""}
+        ${!done&&t.complexity==="complex"&&relatedCount(t)?`<button class="pill hint" data-act="record" data-id="${t.id}" aria-label="${plural(relatedCount(t),"earlier decision","earlier decisions")} may help with ${esc(t.title)}">💡 ${plural(relatedCount(t),"earlier decision","earlier decisions")}</button>`:""}
         ${due?`<span class="${due.includes("overdue")?"due overdue":"due"}">${due}</span>`:""}
         ${done?`<span>Done ${t.doneAt}</span>`:""}
         ${done&&t.outcome?`<button class="pill category" data-act="filter-cat" data-id="${esc(t.outcome.category)}" aria-label="Show all ${esc(cat?.name??t.outcome.category)} decisions">${esc(cat?.name??t.outcome.category)}</button>`:""}
@@ -407,6 +425,7 @@ function openOutcome(id){
     <label for="o-decision">Decision</label><textarea id="o-decision" rows="3" placeholder="What did you decide, and why?">${esc(o.decision)}</textarea>
     <label for="o-category">Category</label>
     <select id="o-category"><option value="">Choose a category…</option>${GROUPS.map(g=>`<optgroup label="${g}">${groups[g].map(c=>`<option value="${c.id}" ${c.id===o.category?"selected":""}>${esc(c.name)}</option>`).join("")}</optgroup>`).join("")}</select>
+    <div id="o-related" aria-live="polite">${relatedHtml(t,o.category)}</div>
     <fieldset class="sticker-pick"><legend>Sticker <span class="muted">(optional)</span></legend>
       <label class="none"><input type="radio" name="o-sticker" value="" ${!o.sticker?"checked":""}><span>None</span></label>
       ${STICKERS.map(st=>`<label title="${esc(st.name)}"><input type="radio" name="o-sticker" value="${st.id}" ${o.sticker===st.id?"checked":""}><span class="sticker" aria-hidden="true">${st.svg}</span><span class="visually-hidden">${esc(st.name)}</span></label>`).join("")}
@@ -415,6 +434,14 @@ function openOutcome(id){
     <div class="row"><button type="submit" class="primary">Save decision</button><button type="button" data-act="close-outcome">Cancel</button></div>
   </form>`;
   $("#outcome").hidden=false; setTimeout(()=>$("#o-result")?.focus(),30);
+}
+/** Earlier decisions on the same topic, shown while you write a new one. */
+function relatedHtml(t,category){
+  const list=L.relatedDecisions(L.decisionsOf(S.tasks),{category,title:t.title,excludeId:t.id});
+  if(!list.length) return "";
+  const cat=category&&categoryById(category);
+  return `<section class="related" aria-label="Earlier decisions"><h3>${cat&&list.some(d=>d.category===category)?`You've decided about ${esc(cat.name)} before`:"Earlier decisions that may help"}</h3>
+    <ul>${list.map(d=>`<li>${d.sticker?stickerImg(d.sticker,"sticker small"):""}<span><b>${esc(d.title)}</b> <span class="muted">${d.doneAt}</span><br>${esc(d.decision)}</span></li>`).join("")}</ul></section>`;
 }
 function closeOutcome(){ recording=null; $("#outcome").hidden=true; $("#outcome").innerHTML=""; }
 
@@ -475,6 +502,7 @@ const A={
   "close-folder":()=>{ openFolder=null; render(); },
   "set-backdrop":d=>{ S.backdrop=d.id; save(); applyBackdrop(); render(); },
   "open-panel":openPanel,
+  "board-add":()=>toggleBoardForm($("#board-form").hidden),
   "close-panel":closePanel,
   "filter-cat":d=>{ filter.group=null; filter.category=d.id; filter.text=""; decisionsMode="list"; if(cur()==="decisions") render(); else location.hash="decisions"; },
   group:d=>{ filter.group=d.g||null; filter.category=null; refreshDecisions(); },
@@ -496,11 +524,12 @@ document.addEventListener("click",e=>{
   if(el.tagName!=="INPUT") e.preventDefault();
   f(el.dataset);
 });
-document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(recording) closeOutcome(); else if(panelOpen&&inRoom()) closePanel(); });
+document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(recording) closeOutcome(); else if(!$("#board-form").hidden) { toggleBoardForm(false); $("#board-add").focus(); } else if(panelOpen&&inRoom()) closePanel(); });
 $("#outcome").addEventListener("click",e=>{ if(e.target.id==="outcome") closeOutcome(); });
 document.addEventListener("change",e=>{
   const el=e.target;
   if(el.id==="backdrop-pick"){ S.backdrop=el.value; save(); applyBackdrop(); if(panelOpen) render(); return; }
+  if(el.id==="o-category"&&recording){ const t=S.tasks.find(x=>x.id===recording), box=$("#o-related"); if(t&&box) box.innerHTML=relatedHtml(t,el.value); return; }
   if(el.id==="f-category"){ filter.category=el.value||null; refreshDecisions(); }
   else if(el.id==="restore-file"&&el.files[0]){ el.files[0].text().then(t=>{ try{ const d=JSON.parse(t); if(d.app!=="threadwork"||!d.state) throw 0; restoreData=d.state; $("#restore-confirm").innerHTML=`<p>Replace everything with the backup from <b>${esc((d.exportedAt||"").slice(0,10))}</b> (${d.state.tasks?.length||0} tasks)?</p><div class="row"><button class="btn primary" data-act="restore-yes">Replace</button><button class="btn ghost" data-act="restore-no">Cancel</button></div>`; }catch(x){ toast("That file isn't a Threadwork backup."); } }); }
 });
@@ -516,6 +545,11 @@ document.addEventListener("submit",e=>{
     if(!title){ const er=$("#capture-err"); er.textContent="Type a task first"; er.hidden=false; return; }
     S.tasks=[L.createTask(title,uid(),today(),{complexity:$("#capture-complex").checked?"complex":"simple",due:$("#capture-due").value||null}),...S.tasks];
     save(); render(); $("#capture")?.focus();
+  }
+  if(f.id==="board-form"){
+    const inp=$("#board-input"), title=inp.value.trim(); if(!title){ inp.focus(); return; }
+    S.tasks=[L.createTask(title,uid(),today(),{complexity:$("#board-complex").checked?"complex":"simple"}),...S.tasks];
+    inp.value=""; $("#board-complex").checked=false; save(); render(); inp.focus(); toast("Added to your list"); return;
   }
   if(f.id==="outcome-form"){
     const r=L.parseOutcome({result:$("#o-result").value,decision:$("#o-decision").value,category:$("#o-category").value,sticker:document.querySelector("input[name=o-sticker]:checked")?.value||null});

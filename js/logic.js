@@ -124,3 +124,30 @@ export function foldersOf(decisions) {
       stickers: [...new Set(list.map(d => d.sticker).filter(Boolean))].slice(0, 3), decisions: list };
   }).filter(Boolean);
 }
+
+/* ---------- Earlier decisions on the same topic ---------- */
+const STOP = new Set(["the", "and", "for", "with", "from", "that", "this", "what", "when", "which", "how", "have", "about", "into", "over", "should", "would", "could", "does", "will", "your", "then", "than", "some", "use", "make", "pick", "choose", "decide", "handle", "check", "update"]);
+/** The distinct words of a text that say something: 3 letters or more, lower case, without filler words. */
+export const keywords = text => [...new Set(String(text ?? "").toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [])].filter(w => !STOP.has(w));
+
+/**
+ * Decisions worth re-reading before deciding again: same category (2 points) or words shared with the title (1 point each).
+ * Best score first, newest first among equals (decisions arrive newest first), at most `limit`.
+ */
+export function relatedDecisions(decisions, { category = "", title = "", excludeId = null, limit = 3 } = {}) {
+  const words = keywords(title);
+  return decisions.filter(d => d.taskId !== excludeId)
+    .map(d => { const hay = new Set(keywords(`${d.title} ${d.decision}`)); return { d, score: (category && d.category === category ? 2 : 0) + words.filter(w => hay.has(w)).length }; })
+    .filter(x => x.score > 0).sort((a, b) => b.score - a.score).slice(0, limit).map(x => x.d);
+}
+
+/* ---------- The room reflects your work ---------- */
+/** time: part of the day; left: share of today's work still open (1 = full cup, 0 = empty); mood: "alert" when something is overdue. */
+export function roomState(tasks, today, hour) {
+  const s = weekSummary(tasks, today), total = s.open + s.doneToday;
+  return {
+    time: hour < 6 ? "night" : hour < 11 ? "morning" : hour < 17 ? "day" : hour < 21 ? "evening" : "night",
+    left: total ? s.open / total : 1,
+    mood: s.overdue > 0 ? "alert" : "calm",
+  };
+}
