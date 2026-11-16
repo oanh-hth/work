@@ -7,7 +7,16 @@ A todo list that remembers what you learned. Built for iPad (installable from Sa
 - **Simple tasks** you just tick off.
 - **Complex tasks** end with a short write-up: the **result** (what happened, what you found out) and your **decision** (what you chose, and why), filed under a **web development category**.
 - **Decisions** shows everything you've decided. Filter by group (Frontend, Backend, Workflow), by category (HTML, CSS, Layout, Accessibility, React, State management, Performance, Testing, PWA, Node.js, APIs, Deployment…) or by text, and export it all as Markdown.
-- **Animated backgrounds**: Coffee shop, Cozy room, Library, Rainy window, Night city, or Plain. Pick one in the header or in Settings; animations stop when Reduce Motion is on.
+- **Animated rooms**: Coffee shop, Cozy room, Library, Rainy window, Night city, or Plain. Pick one in the header or in Settings; animations stop when Reduce Motion is on.
+- **Your tasks on the wall**: in a room, a board shows today's counts and your next tasks. Tap it to open the app, or tap **+** to add a task without leaving the room.
+- **A room that reflects your day**: the light follows the clock, cups empty as you finish today's tasks, and plants droop when something is overdue.
+- **My room**: build your own background in Settings.
+  - Choose each part: wall, floor, window, view, furniture, shelves, light, plant, drink and board.
+  - Use your own colour for the wall, floor and furniture.
+  - **Move and resize things**: drag them in the room, or use the arrow and size buttons.
+  - **Your pictures**: add a photo as a poster, as the view from the window, or as the whole background, or draw a poster with your finger or Apple Pencil.
+  - **A collection to earn**: eight extra items open as you record decisions (the first after 1 decision, the last after 50).
+- **Earlier decisions come back**: when you record a result, decisions on the same topic appear next to the form.
 - **Folders and stickers**: the Decisions page is a shelf of illustrated folders, one per category. Open one to see its decisions as paper notes, each with the sticker you picked (insight, proud, shipped, gotcha, loved it, tricky, confirmed, revisit later).
 - A weekly summary on the task list: to do, overdue, done today and this week, decisions this week, and the topic you decided about most.
 
