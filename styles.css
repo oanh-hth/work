@@ -244,3 +244,50 @@ html[data-mood="alert"] #backdrop .sway{animation:none}
 .board[data-look="white"]{background:#FBFBF8;border:.5em solid #C9CED4;color:#1D2227}
 .board[data-look="white"] .b-title{color:#2B3FC2}
 .board[data-look="white"] .b-note{border-bottom:2px solid #4E7FD9;padding:.15em 0;align-self:flex-start;max-width:100%}
+
+/* ---------- My room: your colours, pictures and collection ---------- */
+.chip[aria-disabled="true"]{opacity:.6;cursor:not-allowed;border-style:dashed}
+.own-colour{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px;font-size:.85rem}
+.own-colour label{display:inline-flex;gap:8px;align-items:center;font-weight:400;margin:0}
+.own-colour input[type=color]{width:44px;height:36px;min-height:0;padding:2px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.pictures{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.picture{display:grid;gap:8px;align-content:start;padding:10px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--surface) 70%,transparent);font-size:.85rem}
+.picture img,.picture .empty{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.picture .empty{display:grid;place-items:center;font-size:1.6rem;color:var(--muted);border-style:dashed}
+.btn.file{cursor:pointer;position:relative}
+.btn.file:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+progress.collect{width:100%;height:10px;accent-color:var(--accent)}
+.rewards{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted)}
+.rewards .got{color:var(--ink);font-weight:700}
+
+/* ---------- Draw a poster ---------- */
+.outcome-form.draw{width:min(430px,100%);justify-items:start}
+#pad{width:100%;max-width:346px;aspect-ratio:462/582;border:8px solid #5A3A2A;border-radius:4px;background:#FBF7EE;touch-action:none;cursor:crosshair;justify-self:center}
+.ink{width:36px;height:36px;min-height:0;padding:0;border-radius:50%;border:2px solid var(--line)}
+.ink[aria-checked="true"]{outline:3px solid var(--accent);outline-offset:2px}
+.seg [aria-checked="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+
+/* ---------- Move and resize things ---------- */
+html.arranging .panel-wrap{display:none}
+html.arranging #backdrop{pointer-events:auto;touch-action:none}
+html.arranging #backdrop .part{cursor:grab}
+html.arranging #backdrop .part.sel{filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 2px #2B3FC2)}
+html.arranging #backdrop svg *{animation-play-state:paused!important}
+html.arranging .board{cursor:grab;touch-action:none}
+html.arranging .board.sel{outline:3px dashed #fff;outline-offset:4px}
+html.arranging .board:hover,html.arranging .board:focus-visible{transform:none}
+.arrange-bar{position:fixed;z-index:6;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(760px,calc(100% - 16px));display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;
+  padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--surface) 94%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:.9rem}
+.arrange-bar[hidden]{display:none}
+.arrange-bar .hint{flex:1 1 100%;margin:0;text-align:center;color:var(--muted);font-size:.82rem}
+.arrange-bar label{display:inline-flex;gap:6px;align-items:center;margin:0;font-weight:400}
+.arrange-bar select{width:auto;min-height:40px}
+.arrange-bar button{min-height:40px}
+.pad-keys{display:inline-flex;gap:4px;align-items:center}
+.pad-keys button{width:40px;padding:0}
+/* While arranging, the app's own layer lets touches through to the room; only the header and the board still take them. */
+html.arranging #app{pointer-events:none}
+html.arranging #app .top,html.arranging #app .board{pointer-events:auto}
+html.arranging #backdrop .glow{pointer-events:none}   /* a lamp's soft glow never grabs the touch: only solid shapes do */
+html.arranging #toast{bottom:auto;top:calc(72px + env(safe-area-inset-top,0px))}   /* keep messages clear of the controls */
+@media (max-width:560px){.arrange-bar .hint{display:none}.arrange-bar{gap:6px 8px;padding:8px}}

@@ -2,8 +2,12 @@
 // Each choice draws a fragment of SVG in the same 1200 × 800 space as the ready-made scenes in art.js.
 // Parts that react to your work use the same classes as those scenes (see styles.css):
 //   .sky (time of day) · .drink and .steam (work left) · .leaf l / r / c (plants droop when something is overdue).
+// On top of the choices a room can carry: your own colours (colors), where you moved and how you resized things (pos),
+// and your own pictures (images). Options with `unlock: n` are earned: they open after n recorded decisions.
 
 /* ---------------------------------------------------------------- helpers */
+/** A darker (factor below 1) or lighter shade of a colour. */
+export const shade = (hex, f = .82) => "#" + [1, 3, 5].map(i => Math.max(0, Math.min(255, Math.round(parseInt(hex.slice(i, i + 2), 16) * f))).toString(16).padStart(2, "0")).join("");
 const dark = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 < 110; };
 const books = (x, y, list) => list.map(([w, h, c], i) => { const out = `<rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${c}"/>`; x += w + 2; return out; }).join("");
 const BOOK = ["#D96C4E", "#4E7FD9", "#E8C35A", "#5DA27A", "#9A6FD0", "#C9B79C"];
@@ -16,14 +20,17 @@ const WALLS = [
   { id: "sky", name: "Pale blue", color: "#CFE0EA" },
   { id: "midnight", name: "Midnight", color: "#3A3150" },
   { id: "slate", name: "Slate", color: "#4B5868" },
-  { id: "stripes", name: "Stripes", color: "#EADBC6", extra: `<pattern id="rm-stripes" width="80" height="10" patternUnits="userSpaceOnUse"><rect width="40" height="10" fill="#DFCDB3"/></pattern><rect width="1200" height="600" fill="url(#rm-stripes)"/>` },
-  { id: "brick", name: "Brick", color: "#B5654A", extra: `<pattern id="rm-brick" width="120" height="60" patternUnits="userSpaceOnUse"><path d="M0 0H120M0 30H120M0 60H120M60 0V30M0 30V60M120 30V60" stroke="#8E4A35" stroke-width="4" fill="none"/></pattern><rect width="1200" height="600" fill="url(#rm-brick)"/>` },
+  { id: "stripes", name: "Stripes", color: "#EADBC6", extra: `<pattern id="rm-stripes" width="80" height="10" patternUnits="userSpaceOnUse"><rect width="40" height="10" fill="#000" opacity=".06"/></pattern><rect width="1200" height="600" fill="url(#rm-stripes)"/>` },
+  { id: "brick", name: "Brick", color: "#B5654A", extra: `<pattern id="rm-brick" width="120" height="60" patternUnits="userSpaceOnUse"><path d="M0 0H120M0 30H120M0 60H120M60 0V30M0 30V60M120 30V60" stroke="#000" stroke-opacity=".28" stroke-width="4" fill="none"/></pattern><rect width="1200" height="600" fill="url(#rm-brick)"/>` },
+  { id: "starry", name: "Starry wallpaper", color: "#232B55", unlock: 40, extra: `<pattern id="rm-starry" width="150" height="120" patternUnits="userSpaceOnUse"><g fill="#F4EBC8"><circle cx="20" cy="24" r="2.5"/><circle cx="96" cy="60" r="2"/><circle cx="60" cy="100" r="3"/><path d="M124 20l3 7l7 1l-5 5l1 7l-6 -3l-6 3l1 -7l-5 -5l7 -1Z"/></g></pattern><rect width="1200" height="600" fill="url(#rm-starry)"/>` },
+  { id: "photo", name: "My picture", color: "#888888", photo: "wall" },
 ];
 const FLOORS = [
   { id: "wood", name: "Wood", color: "#8A5A3C", edge: "#6E452E" },
   { id: "dark", name: "Dark wood", color: "#4A3628", edge: "#33241A" },
   { id: "carpet", name: "Carpet", color: "#8C8FA3", edge: "#70738A" },
   { id: "rug", name: "Wood and a rug", color: "#8A5A3C", edge: "#6E452E", extra: `<ellipse cx="430" cy="716" rx="380" ry="52" fill="#B5564A" opacity=".85"/><ellipse cx="430" cy="716" rx="300" ry="36" fill="none" stroke="#F2E0C0" stroke-width="4" opacity=".7"/>` },
+  { id: "checker", name: "Checker tiles", color: "#E9E4DA", edge: "#8A8478", unlock: 50, extra: `<pattern id="rm-checker" width="120" height="80" patternUnits="userSpaceOnUse"><path d="M0 0h60v40H0ZM60 40h60v40H60Z" fill="#2E2E36"/></pattern><rect y="608" width="1200" height="192" fill="url(#rm-checker)"/>` },
 ];
 
 /* ---------------------------------------------------------------- windows and views */
@@ -63,15 +70,22 @@ ${[[.04, .5, .16], [.22, .68, .2], [.44, .42, .14], [.6, .6, .18], [.8, .36, .16
   { id: "night", name: "Night sky", draw: ([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#18203F"/>
 <circle cx="${x + w * .74}" cy="${y + h * .28}" r="32" fill="#F4EBC8"/><circle cx="${x + w * .74 + 14}" cy="${y + h * .28 - 10}" r="28" fill="#18203F"/>
 <g fill="#fff">${Array.from({ length: 12 }, (_, i) => `<circle class="star" cx="${x + 20 + ((i * 97) % (w - 40))}" cy="${y + 20 + ((i * 61) % (h - 40))}" r="${2 + (i % 2)}"/>`).join("")}</g>` },
+  { id: "mountains", name: "Mountains", unlock: 15, draw: ([x, y, w, h]) => `<rect class="sky" x="${x}" y="${y}" width="${w}" height="${h}" fill="#9CC7E0"/>
+<circle cx="${x + w * .24}" cy="${y + h * .26}" r="${h * .08}" fill="#FFE9A8"/>
+<path d="M${x} ${y + h}L${x + w * .3} ${y + h * .34}L${x + w * .52} ${y + h * .72}L${x + w * .72} ${y + h * .24}L${x + w} ${y + h * .8}V${y + h}Z" fill="#6F8296"/>
+<path d="M${x + w * .3} ${y + h * .34}l${w * .06} ${h * .12}l-${w * .05} -${h * .03}l-${w * .05} ${h * .05}ZM${x + w * .72} ${y + h * .24}l${w * .07} ${h * .14}l-${w * .06} -${h * .04}l-${w * .06} ${h * .06}Z" fill="#fff"/>
+<path d="M${x} ${y + h}L${x + w * .2} ${y + h * .7}L${x + w * .44} ${y + h}Z" fill="#4E8A5E"/>` },
+  { id: "photo", name: "My picture", photo: "view", draw: () => "" },
 ];
 
 /* ---------------------------------------------------------------- furniture */
 const SEATS = [
-  { id: "sofa", name: "Sofa", svg: `<g transform="translate(130 470)"><rect y="40" width="340" height="140" rx="40" fill="#8E5C7E"/><rect x="20" width="300" height="110" rx="40" fill="#A86F95"/><rect x="-20" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="290" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="120" y="50" width="90" height="60" rx="14" fill="#F2C38B" transform="rotate(-8 165 80)"/></g>` },
-  { id: "armchair", name: "Armchair", svg: `<g transform="translate(200 470)"><rect x="10" width="200" height="130" rx="36" fill="#D9A441"/><rect y="70" width="220" height="110" rx="30" fill="#C48F2E"/><rect x="-16" y="60" width="56" height="120" rx="26" fill="#C48F2E"/><rect x="180" y="60" width="56" height="120" rx="26" fill="#C48F2E"/><rect x="14" y="176" width="12" height="18" fill="#5A4636"/><rect x="194" y="176" width="12" height="18" fill="#5A4636"/></g>` },
-  { id: "desk", name: "Desk", svg: `<g transform="translate(110 540)"><rect width="380" height="22" rx="4" fill="#6E452E"/><rect x="18" y="22" width="16" height="120" fill="#5A3A2A"/><rect x="346" y="22" width="16" height="120" fill="#5A3A2A"/><rect x="250" y="22" width="96" height="70" fill="#5A3A2A"/><circle cx="298" cy="57" r="5" fill="#C7A97F"/>
+  { id: "sofa", name: "Sofa", main: "#A86F95", low: "#8E5C7E", svg: `<g transform="translate(130 470)"><rect y="40" width="340" height="140" rx="40" fill="#8E5C7E"/><rect x="20" width="300" height="110" rx="40" fill="#A86F95"/><rect x="-20" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="290" y="60" width="70" height="120" rx="30" fill="#8E5C7E"/><rect x="120" y="50" width="90" height="60" rx="14" fill="#F2C38B" transform="rotate(-8 165 80)"/></g>` },
+  { id: "armchair", name: "Armchair", main: "#D9A441", low: "#C48F2E", svg: `<g transform="translate(200 470)"><rect x="10" width="200" height="130" rx="36" fill="#D9A441"/><rect y="70" width="220" height="110" rx="30" fill="#C48F2E"/><rect x="-16" y="60" width="56" height="120" rx="26" fill="#C48F2E"/><rect x="180" y="60" width="56" height="120" rx="26" fill="#C48F2E"/><rect x="14" y="176" width="12" height="18" fill="#5A4636"/><rect x="194" y="176" width="12" height="18" fill="#5A4636"/></g>` },
+  { id: "desk", name: "Desk", main: "#6E452E", low: "#5A3A2A", svg: `<g transform="translate(110 540)"><rect width="380" height="22" rx="4" fill="#6E452E"/><rect x="18" y="22" width="16" height="120" fill="#5A3A2A"/><rect x="346" y="22" width="16" height="120" fill="#5A3A2A"/><rect x="250" y="22" width="96" height="70" fill="#5A3A2A"/><circle cx="298" cy="57" r="5" fill="#C7A97F"/>
 <rect x="110" y="-82" width="140" height="80" rx="6" fill="#2A2A33"/><rect class="screen" x="118" y="-74" width="124" height="64" rx="3" fill="#8FD0FF"/><rect x="90" y="-4" width="180" height="6" rx="3" fill="#B8BEC4"/>
 <rect x="40" y="-26" width="46" height="26" rx="3" fill="#F2E8D6"/><rect x="36" y="-34" width="46" height="10" rx="3" fill="#D96C4E"/></g>` },
+  { id: "beanbag", name: "Beanbag", main: "#4E9AA8", low: "#3C7C88", unlock: 20, svg: `<g transform="translate(180 500)"><path d="M10 150C-30 90 20 10 110 0C210 -6 280 70 250 150Z" fill="#4E9AA8"/><path d="M40 150C30 110 70 70 130 72C190 74 230 110 222 150Z" fill="#3C7C88"/><circle cx="120" cy="-4" r="12" fill="#3C7C88"/></g>` },
   { id: "none", name: "Nothing", svg: "" },
 ];
 const SHELVES = [
@@ -88,6 +102,10 @@ ${books(20, 510, [[28, 66, BOOK[5]], [20, 76, BOOK[0]]])}<path d="M150 510v-50a2
   { id: "pictures", name: "Pictures", svg: `<g transform="translate(900 200)"><rect width="110" height="140" fill="#F7F1E8" stroke="#5A3A2A" stroke-width="8"/><circle cx="55" cy="60" r="26" fill="#E4572E"/><path d="M10 120l34 -40l26 26l16 -14l20 28Z" fill="#4E8A5E"/>
 <rect x="140" y="30" width="100" height="100" fill="#F7F1E8" stroke="#5A3A2A" stroke-width="8"/><path d="M160 110q30 -70 60 0" fill="none" stroke="#4E7FD9" stroke-width="8"/>
 <rect x="60" y="180" width="130" height="90" fill="#F7F1E8" stroke="#5A3A2A" stroke-width="8"/><rect x="76" y="196" width="40" height="58" fill="#E8C35A"/><rect x="124" y="196" width="50" height="26" fill="#9A6FD0"/><rect x="124" y="228" width="50" height="26" fill="#5DA27A"/></g>` },
+  { id: "trophies", name: "Trophy shelf", unlock: 30, svg: `<g transform="translate(900 300)"><rect y="100" width="240" height="14" rx="3" fill="#6E452E"/><path d="M20 114l14 22M220 114l-14 22" stroke="#523629" stroke-width="5"/>
+<g fill="#E8C35A"><path d="M30 20h50v24a25 25 0 0 1 -50 0Z"/><rect x="50" y="66" width="10" height="20"/><rect x="38" y="86" width="34" height="14" rx="3"/><path d="M30 26h-12v10a14 14 0 0 0 14 14M80 26h12v10a14 14 0 0 1 -14 14" fill="none" stroke="#E8C35A" stroke-width="5"/></g>
+<g transform="translate(120 44)"><circle cx="0" cy="20" r="22" fill="#C9CED4"/><path d="M-10 -24h20l-4 26h-12Z" fill="#4E7FD9"/><rect x="-18" y="42" width="36" height="14" rx="3" fill="#8A93A6"/></g>
+<g transform="translate(196 30)"><path d="M0 0l8 18l20 2l-15 14l4 20l-17 -10l-17 10l4 -20l-15 -14l20 -2Z" fill="#F28BA8"/><rect x="-14" y="56" width="28" height="14" rx="3" fill="#B5564A"/></g></g>` },
   { id: "none", name: "Nothing", svg: "" },
 ];
 const LIGHTS = [
@@ -95,6 +113,9 @@ const LIGHTS = [
   { id: "floor", name: "Floor lamp", svg: `<g transform="translate(760 380)"><line y2="262" stroke="#2A2230" stroke-width="8"/><ellipse cy="262" rx="40" ry="10" fill="#2A2230"/><ellipse class="glow" cy="10" rx="150" ry="120" fill="#FFD9A0" opacity=".35"/><path d="M-60 30L60 30L36 -40L-36 -40Z" fill="#F2C38B"/></g>` },
   { id: "string", name: "String lights", svg: `<path d="M0 60Q300 120 600 60T1200 60" fill="none" stroke="#2A2438" stroke-width="2"/>
 ${[[80, 76], [200, 92], [320, 100], [440, 92], [560, 66], [680, 44], [800, 30], [920, 36], [1040, 48], [1160, 56]].map(([x, y], i) => `<circle class="bulb" cx="${x}" cy="${y}" r="7" fill="${["#FFD27A", "#FF9D7A", "#A8E0FF"][i % 3]}"/>`).join("")}` },
+  { id: "neon", name: "Neon sign", unlock: 10, svg: `<g transform="translate(590 400)" fill="none" stroke-linecap="round" stroke-linejoin="round"><g class="glow"><path d="M0 60l24 -60l24 60l24 -60l24 60" stroke="#FF6FB5" stroke-width="16" opacity=".35"/><path d="M0 60l24 -60l24 60l24 -60l24 60" stroke="#FFD1E8" stroke-width="6"/>
+<path d="M124 0v60M124 30h30M154 0v60" stroke="#6FE3FF" stroke-width="16" opacity=".35"/><path d="M124 0v60M124 30h30M154 0v60" stroke="#D4F6FF" stroke-width="6"/>
+<path d="M182 0l22 30l22 -30M204 30v30" stroke="#FFE66F" stroke-width="16" opacity=".35"/><path d="M182 0l22 30l22 -30M204 30v30" stroke="#FFF7C9" stroke-width="6"/></g></g>` },
   { id: "none", name: "Nothing", svg: "" },
 ];
 
@@ -119,6 +140,11 @@ const PLANTS = [
   { id: "flowers", name: "Flowers", svg: plant(
     [["l", -56, -110, "#F28BA8"], ["r", 56, -110, "#E8C35A"], ["l", -24, -150, "#E4572E"], ["r", 26, -146, "#9A6FD0"], ["c", 0, -176, "#F28BA8"]].map(([side, x, y, c]) =>
       `<g class="leaf ${side}" style="transform-origin:0 0"><path d="M0 0Q${x / 2} ${y / 2} ${x} ${y}" stroke="#4E8A5E" stroke-width="6" fill="none"/><circle cx="${x}" cy="${y}" r="20" fill="${c}"/><circle cx="${x}" cy="${y}" r="8" fill="#FFF3C9"/></g>`).join("")) },
+  { id: "bonsai", name: "Bonsai", unlock: 1, svg: plant(
+    `<path d="M0 0C-4 -30 -30 -40 -26 -70C-22 -90 6 -84 10 -110" stroke="#6E452E" stroke-width="12" fill="none" stroke-linecap="round"/>` +
+    `<g class="leaf l" style="transform-origin:-26px -70px"><ellipse cx="-58" cy="-82" rx="40" ry="20" fill="#4E9A60"/></g>` +
+    `<g class="leaf r" style="transform-origin:10px -110px"><ellipse cx="46" cy="-104" rx="42" ry="20" fill="#3F7D4E"/></g>` +
+    `<g class="leaf c" style="transform-origin:10px -110px"><ellipse cx="6" cy="-136" rx="46" ry="22" fill="#5FA571"/></g>`) },
   { id: "none", name: "No plant", svg: "" },
 ];
 
@@ -131,6 +157,10 @@ const DRINKS = [
   { id: "coffee", name: "Coffee", svg: drink("#F7F1E8", "#6B3E25") },
   { id: "tea", name: "Green tea", svg: drink("#2F6E8F", "#A9B865") },
   { id: "cocoa", name: "Cocoa", svg: drink("#E7B34B", "#4A2A1A") },
+  { id: "bubble", name: "Bubble tea", unlock: 5, svg: `<g transform="translate(832 560)">${TABLE}<g transform="translate(-24 -84)"><path d="M0 0h48l-6 84h-36Z" fill="#fff" opacity=".55"/>
+<clipPath id="rm-cup"><path d="M3 12h42l-5 70h-32Z"/></clipPath><g clip-path="url(#rm-cup)"><rect class="drink" x="0" y="12" width="48" height="72" fill="#D9A77A"/></g>
+<g fill="#3A2A20"><circle cx="14" cy="74" r="5"/><circle cx="26" cy="77" r="5"/><circle cx="36" cy="72" r="5"/><circle cx="20" cy="64" r="5"/></g>
+<rect x="-3" y="-6" width="54" height="8" rx="4" fill="#F28BA8"/><rect x="26" y="-40" width="7" height="90" rx="3" fill="#E4572E" transform="rotate(8 30 0)"/></g></g>` },
   { id: "none", name: "Nothing", svg: "" },
 ];
 
@@ -140,44 +170,125 @@ const BOARDS = [
   { id: "chalk", name: "Chalkboard" },
   { id: "white", name: "Whiteboard" },
 ];
-/** Where the board hangs in a built room, in scene coordinates. */
+/** Where the board hangs in a built room before you move it, in scene coordinates. */
 export const ROOM_BOARD = { x: 560, y: 130, w: 262, h: 190 };
 
 /* ---------------------------------------------------------------- slots */
-/** The slots of a room, in the order the builder shows them. */
+/** The slots of a room, in the order the builder shows them. `tint` names the slots you can give your own colour. */
 export const SLOTS = [
-  { id: "wall", name: "Wall", options: WALLS },
-  { id: "floor", name: "Floor", options: FLOORS },
+  { id: "wall", name: "Wall", options: WALLS, tint: true },
+  { id: "floor", name: "Floor", options: FLOORS, tint: true },
   { id: "window", name: "Window", options: WINDOWS },
   { id: "view", name: "View", options: VIEWS },
-  { id: "seat", name: "Furniture", options: SEATS },
+  { id: "seat", name: "Furniture", options: SEATS, tint: true },
   { id: "shelf", name: "On the wall", options: SHELVES },
   { id: "light", name: "Light", options: LIGHTS },
   { id: "plant", name: "Plant", options: PLANTS },
   { id: "drink", name: "Drink", options: DRINKS },
   { id: "board", name: "Board", options: BOARDS },
 ];
-export const DEFAULT_ROOM = { wall: "sage", floor: "rug", window: "arched", view: "garden", seat: "armchair", shelf: "floating", light: "floor", plant: "monstera", drink: "tea", board: "cork" };
+const CHOICES = { wall: "sage", floor: "rug", window: "arched", view: "garden", seat: "armchair", shelf: "floating", light: "floor", plant: "monstera", drink: "tea", board: "cork" };
+export const DEFAULT_ROOM = { ...CHOICES, colors: {}, pos: {}, images: {} };
 
-const pick = (slot, id) => slot.options.find(o => o.id === id) ?? slot.options.find(o => o.id === DEFAULT_ROOM[slot.id]) ?? slot.options[0];
-/** A complete, valid room from anything saved: unknown slots and choices fall back to the default room. */
+/** The things you can move and resize, and the point each one grows from. */
+export const PARTS = [
+  { id: "window", name: "Window", anchor: [280, 280] },
+  { id: "shelf", name: "On the wall", anchor: [1020, 400] },
+  { id: "poster", name: "Poster", anchor: [953, 225] },
+  { id: "seat", name: "Furniture", anchor: [300, 560] },
+  { id: "light", name: "Light", anchor: [800, 300] },
+  { id: "drink", name: "Drink", anchor: [832, 560] },
+  { id: "plant", name: "Plant", anchor: [556, 640] },
+  { id: "board", name: "Board", anchor: [691, 225] },
+];
+export const LIMITS = { x: 1000, y: 520, min: .5, max: 1.8 };
+const IMAGES = ["poster", "view", "wall"];
+const isHex = v => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v);
+const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), hi);
+const record = v => (v && typeof v === "object" && !Array.isArray(v) ? v : {});
+
+/* ---------------------------------------------------------------- rules */
+/** Can this option be chosen at all in this room? "My picture" options need their picture. */
+const available = (o, images) => !o.photo || !!images[o.photo];
+/** A complete, valid room from anything saved: unknown slots, choices, colours, positions and pictures are dropped or replaced by defaults. */
 export function normalizeRoom(room) {
-  const out = {};
-  for (const slot of SLOTS) out[slot.id] = pick(slot, room?.[slot.id]).id;
+  const from = record(room), out = { colors: {}, pos: {}, images: {} };
+  for (const k of IMAGES) { const v = record(from.images)[k]; if (typeof v === "string" && v.startsWith("data:image/")) out.images[k] = v; }
+  for (const slot of SLOTS) {
+    const o = slot.options.find(x => x.id === from[slot.id] && available(x, out.images));
+    out[slot.id] = o ? o.id : CHOICES[slot.id];
+    const c = record(from.colors)[slot.id];
+    if (slot.tint && isHex(c)) out.colors[slot.id] = c.toLowerCase();
+  }
+  for (const part of PARTS) {
+    const p = record(from.pos)[part.id];
+    if (p && [p.x, p.y, p.s].every(Number.isFinite)) out.pos[part.id] = { x: clamp(Math.round(p.x), -LIMITS.x, LIMITS.x), y: clamp(Math.round(p.y), -LIMITS.y, LIMITS.y), s: clamp(Math.round(p.s * 100) / 100, LIMITS.min, LIMITS.max) };
+  }
   return out;
 }
 /** A room with one choice changed. */
 export const setSlot = (room, slotId, optionId) => normalizeRoom({ ...room, [slotId]: optionId });
-/** A random room. `random` is a function like Math.random, passed in so the result can be tested. */
-export function randomRoom(random = Math.random) {
-  const out = {};
-  for (const slot of SLOTS) out[slot.id] = slot.options[Math.floor(random() * slot.options.length)].id;
-  return out;
+/** A room with your own colour for a slot, or the standard colour again when `color` is null. */
+export function setColor(room, slotId, color) {
+  const colors = { ...normalizeRoom(room).colors };
+  if (color) colors[slotId] = color; else delete colors[slotId];
+  return normalizeRoom({ ...room, colors });
 }
+const posOf = (room, id) => room.pos?.[id] ?? { x: 0, y: 0, s: 1 };
+/** A room with one thing moved by (dx, dy) scene units and resized by ds. */
+export function movePart(room, partId, dx = 0, dy = 0, ds = 0) {
+  const p = posOf(room, partId);
+  return normalizeRoom({ ...room, pos: { ...room.pos, [partId]: { x: p.x + dx, y: p.y + dy, s: p.s + ds } } });
+}
+/** Everything back where it started. */
+export const resetLayout = room => normalizeRoom({ ...room, pos: {} });
+/** A room with one of your pictures set ("poster", "view" or "wall"), or removed when `data` is null. A view or wall picture is also chosen. */
+export function setImage(room, kind, data) {
+  const images = { ...room.images };
+  if (data) images[kind] = data; else delete images[kind];
+  const next = { ...room, images };
+  if (data && kind !== "poster") next[kind] = "photo";
+  return normalizeRoom(next);
+}
+
+/* ---------------------------------------------------------------- earned options */
+/** Every earned option, cheapest first: { slot, id, name, unlock }. */
+export const REWARDS = SLOTS.flatMap(s => s.options.filter(o => o.unlock).map(o => ({ slot: s.id, slotName: s.name, id: o.id, name: o.name, unlock: o.unlock }))).sort((a, b) => a.unlock - b.unlock);
+/** Is this option open with this many recorded decisions? */
+export const isUnlocked = (option, decisions) => (option.unlock ?? 0) <= decisions;
+/** What you have collected so far, what comes next, and what opened between two counts. */
+export function collection(decisions, before = decisions) {
+  return {
+    earned: REWARDS.filter(r => r.unlock <= decisions),
+    next: REWARDS.find(r => r.unlock > decisions) ?? null,
+    fresh: REWARDS.filter(r => r.unlock > before && r.unlock <= decisions),
+  };
+}
+/** A random room from what you have unlocked. `random` works like Math.random and is passed in so the result can be tested. Your pictures stay. */
+export function randomRoom(random = Math.random, decisions = 0, room = DEFAULT_ROOM) {
+  const out = { images: room.images };
+  for (const slot of SLOTS) {
+    const open = slot.options.filter(o => !o.photo && isUnlocked(o, decisions));
+    out[slot.id] = open[Math.floor(random() * open.length)].id;
+  }
+  return normalizeRoom(out);
+}
+
+const pick = (slotId, r) => { const slot = SLOTS.find(s => s.id === slotId); return slot.options.find(o => o.id === r[slotId]) ?? slot.options[0]; };
 /** The colour behind a room's thumbnail. */
-export const roomTint = room => pick(SLOTS[0], normalizeRoom(room).wall).color;
+export const roomTint = room => { const r = normalizeRoom(room); return r.colors.wall ?? pick("wall", r).color; };
 /** How the board looks in this room: "cork", "chalk" or "white". */
 export const roomBoardLook = room => normalizeRoom(room).board;
+/** Where the board hangs in this room, after you moved or resized it. */
+export function roomBoardSpot(room) {
+  const r = normalizeRoom(room), p = posOf(r, "board"), w = ROOM_BOARD.w * p.s, h = ROOM_BOARD.h * p.s;
+  return { x: ROOM_BOARD.x + p.x - (w - ROOM_BOARD.w) / 2, y: ROOM_BOARD.y + p.y - (h - ROOM_BOARD.h) / 2, w, h, look: r.board };
+}
+/** The SVG transform that puts a part where you moved it, grown around its anchor. */
+export function partTransform(room, partId) {
+  const p = posOf(room, partId), [ax, ay] = PARTS.find(x => x.id === partId).anchor;
+  return `translate(${p.x} ${p.y}) translate(${ax} ${ay}) scale(${p.s}) translate(${-ax} ${-ay})`;
+}
 
 const STYLE = `<style>
 .sc-room .lamp{transform-origin:0 0;animation:rm-swing 6s ease-in-out infinite}
@@ -199,20 +310,30 @@ const STYLE = `<style>
 @media (prefers-reduced-motion: reduce){.sc-room *{animation:none!important}}
 </style>`;
 
-/** The whole room as one SVG string, back to front: wall, floor, window, things on the wall, furniture, light, plant, drink. */
+/** The whole room as one SVG string, back to front: wall, floor, window, things on the wall, furniture, light, drink, plant. */
 export function buildRoom(room) {
-  const r = normalizeRoom(room), get = id => pick(SLOTS.find(s => s.id === id), r[id]);
-  const wall = get("wall"), floor = get("floor"), win = get("window"), frame = dark(wall.color) ? "#E9DCC7" : "#5B3A2A";
-  const windowSvg = win.box ? `<clipPath id="rm-win">${win.glass}</clipPath><g clip-path="url(#rm-win)">${get("view").draw(win.box)}</g>${win.frame(frame)}` : "";
+  const r = normalizeRoom(room), get = id => pick(id, r);
+  const wall = get("wall"), floor = get("floor"), win = get("window"), seat = get("seat"), light = get("light");
+  const wallColor = r.colors.wall ?? wall.color, floorColor = r.colors.floor ?? floor.color, floorEdge = r.colors.floor ? shade(floorColor) : floor.edge;
+  const photoWall = wall.photo && r.images.wall;
+  const frame = !photoWall && dark(wallColor) ? "#E9DCC7" : "#5B3A2A";
+  // Every movable thing is wrapped in a group that carries where you put it.
+  const part = (id, inner) => (inner ? `<g class="part" data-part="${id}" transform="${partTransform(r, id)}">${inner}</g>` : "");
+  const img = (src, x, y, w, h) => `<image href="${src}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice"/>`;
+  const view = win.box ? (get("view").photo ? img(r.images.view, ...win.box) : get("view").draw(win.box)) : "";
+  const windowSvg = win.box ? `<clipPath id="rm-win">${win.glass}</clipPath><g clip-path="url(#rm-win)">${view}</g>${win.frame(frame)}` : "";
+  const seatSvg = r.colors.seat && seat.main ? seat.svg.replaceAll(seat.main, r.colors.seat).replaceAll(seat.low, shade(r.colors.seat)) : seat.svg;
+  const poster = r.images.poster ? `<rect x="868" y="120" width="170" height="210" fill="#F7F1E8" stroke="#5A3A2A" stroke-width="10"/>${img(r.images.poster, 876, 128, 154, 194)}` : "";
   return `<svg class="sc-room" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${STYLE}
-<rect width="1200" height="800" fill="${wall.color}"/>${wall.extra ?? ""}
-<rect y="600" width="1200" height="200" fill="${floor.color}"/><rect y="592" width="1200" height="16" fill="${floor.edge}"/>${floor.extra ?? ""}
-${windowSvg}
-${get("shelf").svg}
-${get("light").id === "string" ? get("light").svg : ""}
-${get("seat").svg}
-${get("light").id !== "string" ? get("light").svg : ""}
-${get("drink").svg}
-${get("plant").svg}
+${photoWall ? img(r.images.wall, 0, 0, 1200, 800) : `<rect width="1200" height="800" fill="${wallColor}"/>${wall.extra ?? ""}
+<rect y="600" width="1200" height="200" fill="${floorColor}"/><rect y="592" width="1200" height="16" fill="${floorEdge}"/>${floor.extra ?? ""}`}
+${part("window", windowSvg)}
+${part("shelf", get("shelf").svg)}
+${part("poster", poster)}
+${light.id === "string" ? part("light", light.svg) : ""}
+${part("seat", seatSvg)}
+${light.id !== "string" ? part("light", light.svg) : ""}
+${part("drink", get("drink").svg)}
+${part("plant", get("plant").svg)}
 </svg>`;
 }

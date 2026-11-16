@@ -5,7 +5,7 @@ import * as cloud from "./cloud.js";
 import * as L from "./logic.js";
 import { CATEGORIES, GROUPS, categoryById, categoriesByGroup } from "./categories.js";
 import { THEMES, themeById, STICKERS, stickerById, folderSvg, GROUP_COLORS } from "./art.js";
-import { SLOTS, DEFAULT_ROOM, ROOM_BOARD, normalizeRoom, setSlot, randomRoom, buildRoom, roomTint, roomBoardLook } from "./room.js";
+import { SLOTS, PARTS, DEFAULT_ROOM, normalizeRoom, setSlot, setColor, movePart, resetLayout, setImage, randomRoom, buildRoom, roomTint, roomBoardSpot, partTransform, isUnlocked, collection, REWARDS } from "./room.js";
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -29,8 +29,12 @@ let shownBackdrop=null;
 function theme(id=S.backdrop){
   const t=themeById(id);
   if(t.id!=="custom") return {...t,key:t.id};
-  return {...t,key:"custom:"+JSON.stringify(S.room),svg:buildRoom(S.room),tint:roomTint(S.room),board:{...ROOM_BOARD,look:roomBoardLook(S.room)}};
+  return {...t,key:"custom:"+JSON.stringify(S.room),svg:buildRoom(S.room),tint:roomTint(S.room),board:roomBoardSpot(S.room)};
 }
+/** Where the board hangs in the chosen background (null for Plain). Cheap: doesn't draw the room. */
+const boardSpot=()=>S.backdrop==="custom"?roomBoardSpot(S.room):themeById(S.backdrop).board;
+/** Decisions you recorded yourself: the example tasks don't count towards what you collect. */
+const decisionCount=()=>L.decisionsOf(S.tasks.filter(t=>!t.sample)).length;
 function applyBackdrop(){
   const t=theme(), el=$("#backdrop"); if(!el) return;
   document.documentElement.dataset.backdrop=t.id;
@@ -47,20 +51,20 @@ setInterval(()=>{ if(signedIn) applyRoomState(); },5*60*1000);
 
 /* ---------------- The board on the wall ---------------- */
 // In a room, the main panel is put away and a board hangs on the wall with a summary. Tap it to open the panel.
-let panelOpen=false;
-const inRoom=()=>!!theme().board;
+let panelOpen=false, arranging=false;
+const inRoom=()=>!!boardSpot();
 function applyRoom(){
   const room=inRoom()&&!panelOpen;
   document.documentElement.classList.toggle("room",room);
   document.documentElement.classList.toggle("can-close",inRoom()&&panelOpen);
   const b=$("#board"); if(!b) return;
-  b.hidden=!room; $("#board-add").hidden=!room;
+  b.hidden=!room; $("#board-add").hidden=!room||arranging;
   if(!room) toggleBoardForm(false);
   if(room){ renderBoard(); placeBoard(); }
 }
 /** Scenes fill the screen like object-fit: cover. Map the board's scene coordinates to the screen. */
 function placeBoard(){
-  const spot=theme().board, b=$("#board"); if(!spot||!b) return;
+  const spot=boardSpot(), b=$("#board"); if(!spot||!b) return;
   const W=innerWidth, H=innerHeight, scale=Math.max(W/1200,H/800), ox=(W-1200*scale)/2, oy=(H-800*scale)/2;
   let x=ox+spot.x*scale, y=oy+spot.y*scale, w=spot.w*scale, h=spot.h*scale;
   const top=($(".top")?.offsetHeight??56)+8;
@@ -284,7 +288,7 @@ async function boot(){
 /* ---------------- Routing ---------------- */
 const VIEWS=["tasks","decisions","settings"];
 const cur=()=>{const h=location.hash.slice(1);return VIEWS.includes(h)?h:"tasks"};
-window.addEventListener("hashchange",()=>{ if(signedIn){ closeOutcome(); if(inRoom()&&!panelOpen) openPanel(); else render(); } });
+window.addEventListener("hashchange",()=>{ if(signedIn){ closeOutcome(); if(arranging) stopArranging(); if(inRoom()&&!panelOpen) openPanel(); else render(); } });
 const filter={group:null,category:null,text:""};
 let showAllDone=false, recording=null, searchT=null, restoreData=null;
 
@@ -423,14 +427,29 @@ function folderView(f){
 function refreshDecisions(){ const f=$("#filters"); if(f){ f.innerHTML=filterControls(); } const l=$("#decision-list"); if(l) l.innerHTML=decisionList(); }
 
 /* ---------------- Room builder ---------------- */
+const PICTURES=[["poster","Poster on the wall",500],["view","View from the window",700],["wall","Whole background",1400]];
 /** One row of choices per slot. Each row is a radio group; the room behind the panel changes as you choose. */
 function roomBuilder(){
+  const n=decisionCount(), col=collection(n), r=S.room;
+  const chip=(s,o)=>{ const open=isUnlocked(o,n);
+    return `<button type="button" role="radio" class="chip" aria-checked="${r[s.id]===o.id}" ${open?`data-act="set-room" data-slot="${s.id}" data-id="${o.id}"`:`aria-disabled="true" title="Opens after ${plural(o.unlock,"decision","decisions")}"`}>${o.color&&!o.photo?`<span class="swatch" style="background:${o.color}"></span>`:""}${open?"":"🔒 "}${esc(o.name)}${open?"":` <span class="muted">· ${o.unlock}</span>`}</button>`; };
+  const tint=s=>{ if(!s.tint) return ""; const own=r.colors[s.id], std=s.options.find(o=>o.id===r[s.id]);
+    return `<div class="own-colour"><label>Your own colour <input type="color" data-color="${s.id}" value="${own??std?.main??std?.color??"#888888"}"></label>${own?`<button type="button" class="ghost" data-act="clear-color" data-slot="${s.id}">Use the standard colour</button>`:""}</div>`; };
   return `<section class="card stack wide" id="room-builder"><h2>Build your room</h2>
     <p class="muted" style="font-size:.88rem">Choose each part. The room behind this panel changes as you go: tap <b>Back to the room</b> to see it all.</p>
-    <div class="room-preview" id="room-preview" aria-hidden="true">${buildRoom(S.room)}</div>
+    <div class="room-preview" id="room-preview" aria-hidden="true">${buildRoom(r)}</div>
+    <div class="row"><button class="primary" data-act="arrange">✋ Move and resize things</button><button class="btn" data-act="room-random">🎲 Surprise me</button><button class="btn" data-act="room-reset">Start again</button></div>
     ${SLOTS.map(s=>`<div class="slot"><h3 id="slot-${s.id}">${esc(s.name)}</h3>
-      <div class="chips" role="radiogroup" aria-labelledby="slot-${s.id}">${s.options.map(o=>`<button type="button" role="radio" class="chip" aria-checked="${S.room[s.id]===o.id}" data-act="set-room" data-slot="${s.id}" data-id="${o.id}">${o.color?`<span class="swatch" style="background:${o.color}"></span>`:""}${esc(o.name)}</button>`).join("")}</div></div>`).join("")}
-    <div class="row"><button class="btn" data-act="room-random">🎲 Surprise me</button><button class="btn" data-act="room-reset">Start again</button></div>
+      <div class="chips" role="radiogroup" aria-labelledby="slot-${s.id}">${s.options.filter(o=>!o.photo||r.images[o.photo]).map(o=>chip(s,o)).join("")}</div>${tint(s)}</div>`).join("")}
+    <div class="slot"><h3>Your pictures</h3>
+      <p class="muted" style="font-size:.85rem">Add a photo or a drawing from your device, or draw a poster here with your finger or Apple Pencil. Pictures are made smaller before they are saved.</p>
+      <div class="pictures">${PICTURES.map(([k,label])=>`<div class="picture">${r.images[k]?`<img src="${r.images[k]}" alt="">`:`<span class="empty" aria-hidden="true">＋</span>`}<b>${label}</b>
+        <div class="row"><label class="btn file">${r.images[k]?"Change":"Choose a picture"}<input type="file" accept="image/*" data-image="${k}" class="visually-hidden"></label>
+        ${k==="poster"?`<button type="button" class="btn" data-act="draw-poster">✏️ Draw</button>`:""}${r.images[k]?`<button type="button" class="ghost" data-act="remove-image" data-kind="${k}" aria-label="Remove: ${label}">Remove</button>`:""}</div></div>`).join("")}</div></div>
+    <div class="slot"><h3>Your collection</h3>
+      <p class="muted" style="font-size:.85rem">Every decision you record counts. ${col.next?`Next: <b>${esc(col.next.name)}</b> (${esc(col.next.slotName)}) at ${plural(col.next.unlock,"decision","decisions")}, ${col.next.unlock-n} to go.`:"You have collected everything."}</p>
+      <progress class="collect" max="${REWARDS.length}" value="${col.earned.length}" aria-label="Collected ${col.earned.length} of ${REWARDS.length}"></progress>
+      <ul class="rewards">${REWARDS.map(x=>`<li class="${x.unlock<=n?"got":""}">${x.unlock<=n?"✓":"🔒"} ${esc(x.name)} <span class="muted">· ${x.unlock}</span></li>`).join("")}</ul></div>
   </section>`;
 }
 /** Redraw the builder in place, and keep the keyboard focus on the choice just made. */
@@ -440,6 +459,79 @@ function refreshBuilder(slot){
   const thumb=document.querySelector('.theme-pick[data-id="custom"] .thumb'); if(thumb){ thumb.innerHTML=buildRoom(S.room); thumb.style.background=roomTint(S.room); }
   if(slot) document.querySelector(`#room-builder [data-slot="${slot}"][aria-checked="true"]`)?.focus();
 }
+const setRoom=(room,slot)=>{ S.room=room; save(); applyBackdrop(); refreshBuilder(slot); };
+
+/* ---------------- Your pictures ---------------- */
+/** Read a picture file and make it at most `max` pixels on its longer side, as a JPEG data URL small enough to save and sync. */
+async function shrinkImage(file,max){
+  const bmp=await createImageBitmap(file), k=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas"); c.width=Math.round(bmp.width*k); c.height=Math.round(bmp.height*k);
+  const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(bmp,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",.82);
+}
+
+/* ---------------- Draw a poster ---------------- */
+const INKS=["#1D2227","#E4572E","#E8C35A","#4E9A60","#4E7FD9","#9A6FD0","#F28BA8","#FFFFFF"], PAPER="#FBF7EE";
+let pad=null;   // { strokes: [{ color, size, points: [[x, y, pressure]] }], color, size, base }
+function openDraw(){
+  pad={strokes:[],color:INKS[0],size:6,base:null}; recording="draw";
+  $("#outcome").innerHTML=`<div class="outcome-form draw" role="dialog" aria-label="Draw a poster"><h2>Draw a poster</h2>
+    <canvas id="pad" width="462" height="582" aria-label="Drawing area"></canvas>
+    <div class="row inks" role="radiogroup" aria-label="Colour">${INKS.map((c,i)=>`<button type="button" role="radio" class="ink" aria-checked="${i===0}" data-act="pad-ink" data-c="${c}" aria-label="Colour ${i+1}" style="background:${c}"></button>`).join("")}</div>
+    <div class="row"><span class="seg" role="radiogroup" aria-label="Pen size">${[[3,"Fine"],[6,"Medium"],[14,"Thick"]].map(([n,l])=>`<button type="button" role="radio" aria-checked="${n===6}" data-act="pad-size" data-n="${n}">${l}</button>`).join("")}</span>
+      <button type="button" data-act="pad-undo">Undo</button><button type="button" data-act="pad-clear">Clear</button></div>
+    <div class="row"><button type="button" class="primary" data-act="pad-save">Hang it on the wall</button><button type="button" data-act="close-outcome">Cancel</button></div></div>`;
+  $("#outcome").hidden=false;
+  const cv=$("#pad"); let live=null;
+  const at=e=>{ const b=cv.getBoundingClientRect(); return [(e.clientX-b.left)*cv.width/b.width,(e.clientY-b.top)*cv.height/b.height,e.pointerType==="pen"&&e.pressure?e.pressure:.5]; };
+  cv.addEventListener("pointerdown",e=>{ e.preventDefault(); cv.setPointerCapture(e.pointerId); live={color:pad.color,size:pad.size,points:[at(e)]}; pad.strokes.push(live); paintPad(); });
+  cv.addEventListener("pointermove",e=>{ if(!live) return; for(const ev of (e.getCoalescedEvents?.()??[e])) live.points.push(at(ev)); paintPad(); });
+  const end=()=>{ live=null; }; cv.addEventListener("pointerup",end); cv.addEventListener("pointercancel",end);
+  if(S.room.images.poster){ const im=new Image(); im.onload=()=>{ if(pad){ pad.base=im; paintPad(); } }; im.src=S.room.images.poster; }   // carry on from the poster you have
+  paintPad();
+}
+function paintPad(){
+  const cv=$("#pad"); if(!cv||!pad) return; const g=cv.getContext("2d");
+  g.fillStyle=PAPER; g.fillRect(0,0,cv.width,cv.height); if(pad.base) g.drawImage(pad.base,0,0,cv.width,cv.height);
+  g.lineCap=g.lineJoin="round";
+  for(const st of pad.strokes){ g.strokeStyle=g.fillStyle=st.color; const p=st.points;
+    if(p.length===1){ g.beginPath(); g.arc(p[0][0],p[0][1],st.size*(.5+p[0][2])/2,0,7); g.fill(); continue; }
+    for(let i=1;i<p.length;i++){ g.lineWidth=st.size*(.5+p[i][2]); g.beginPath(); g.moveTo(p[i-1][0],p[i-1][1]); g.lineTo(p[i][0],p[i][1]); g.stroke(); } }
+}
+
+/* ---------------- Move and resize things ---------------- */
+let selPart="plant", drag=null;
+const sceneScale=()=>Math.max(innerWidth/1200,innerHeight/800);
+const partEl=id=>id==="board"?$("#board"):document.querySelector(`#backdrop [data-part="${id}"]`);
+function startArranging(){
+  arranging=true; panelOpen=false; closeOutcome(); document.documentElement.classList.add("arranging"); applyRoom();
+  if(!partEl(selPart)) selPart="board";
+  paintArrange(); scrollTo(0,0); $("#arrange-part")?.focus();
+}
+function stopArranging(){ arranging=false; drag=null; document.documentElement.classList.remove("arranging"); $("#arrange-bar").hidden=true; document.querySelectorAll(".sel").forEach(e=>e.classList.remove("sel")); save(); }
+function paintArrange(){
+  const here=PARTS.filter(p=>partEl(p.id)), bar=$("#arrange-bar"), p=S.room.pos[selPart];
+  bar.innerHTML=`<p class="hint">Drag things in the room to move them, or use the buttons.</p>
+    <label>Item <select id="arrange-part">${here.map(x=>`<option value="${x.id}" ${x.id===selPart?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+    <span class="pad-keys" role="group" aria-label="Move">${[["←",-20,0,"left"],["↑",0,-20,"up"],["↓",0,20,"down"],["→",20,0,"right"]].map(([t,x,y,l])=>`<button type="button" data-act="nudge" data-dx="${x}" data-dy="${y}" aria-label="Move ${l}">${t}</button>`).join("")}</span>
+    <span class="pad-keys" role="group" aria-label="Size"><button type="button" data-act="nudge" data-ds="-0.1" aria-label="Smaller">−</button><span class="muted" aria-live="polite">${Math.round((p?.s??1)*100)}%</span><button type="button" data-act="nudge" data-ds="0.1" aria-label="Bigger">+</button></span>
+    <button type="button" data-act="layout-reset">Put everything back</button><button type="button" class="primary" data-act="arrange-done">Done</button>`;
+  bar.hidden=false;
+  document.querySelectorAll(".sel").forEach(e=>e.classList.remove("sel")); partEl(selPart)?.classList.add("sel");
+}
+/** Show a part where the room now says it is, without redrawing the whole scene. */
+function placePart(id){ if(id==="board") placeBoard(); else partEl(id)?.setAttribute("transform",partTransform(S.room,id)); }
+function nudge(dx,dy,ds){ S.room=movePart(S.room,selPart,dx,dy,ds); shownBackdrop="custom:"+JSON.stringify(S.room); placePart(selPart); }
+document.addEventListener("pointerdown",e=>{
+  if(!arranging) return; const el=e.target.closest?.("#backdrop .part, #board"); if(!el) return;
+  e.preventDefault(); selPart=el.id==="board"?"board":el.dataset.part; drag={id:e.pointerId,x:e.clientX,y:e.clientY}; paintArrange();
+});
+document.addEventListener("pointermove",e=>{
+  if(!drag||e.pointerId!==drag.id) return; const k=sceneScale(), was=S.room.pos[selPart]??{x:0,y:0};
+  nudge((e.clientX-drag.x)/k,(e.clientY-drag.y)/k,0);
+  const now=S.room.pos[selPart]; drag.x+=(now.x-was.x)*k; drag.y+=(now.y-was.y)*k;   // only count what was applied, so rounding never drifts
+});
+for(const ev of ["pointerup","pointercancel"]) document.addEventListener(ev,e=>{ if(drag&&e.pointerId===drag.id){ drag=null; save(); paintArrange(); } });
 
 /* ---------------- Outcome dialog ---------------- */
 function openOutcome(id){
@@ -469,7 +561,7 @@ function relatedHtml(t,category){
   return `<section class="related" aria-label="Earlier decisions"><h3>${cat&&list.some(d=>d.category===category)?`You've decided about ${esc(cat.name)} before`:"Earlier decisions that may help"}</h3>
     <ul>${list.map(d=>`<li>${d.sticker?stickerImg(d.sticker,"sticker small"):""}<span><b>${esc(d.title)}</b> <span class="muted">${d.doneAt}</span><br>${esc(d.decision)}</span></li>`).join("")}</ul></section>`;
 }
-function closeOutcome(){ recording=null; $("#outcome").hidden=true; $("#outcome").innerHTML=""; }
+function closeOutcome(){ recording=null; pad=null; $("#outcome").hidden=true; $("#outcome").innerHTML=""; }
 
 /* ---------------- Settings ---------------- */
 R.settings=()=>{
@@ -528,10 +620,22 @@ const A={
   "open-folder":d=>{ openFolder=d.id; render(); $("#view").scrollIntoView?.({block:"start"}); },
   "close-folder":()=>{ openFolder=null; render(); },
   "set-backdrop":d=>{ S.backdrop=d.id; save(); applyBackdrop(); render(); },
-  "set-room":d=>{ S.room=setSlot(S.room,d.slot,d.id); save(); applyBackdrop(); refreshBuilder(d.slot); },
-  "room-random":()=>{ S.room=randomRoom(); save(); applyBackdrop(); refreshBuilder(); },
-  "room-reset":()=>{ S.room={...DEFAULT_ROOM}; save(); applyBackdrop(); refreshBuilder(); },
-  "open-panel":openPanel,
+  "set-room":d=>setRoom(setSlot(S.room,d.slot,d.id),d.slot),
+  "room-random":()=>setRoom(randomRoom(Math.random,decisionCount(),S.room)),
+  "room-reset":()=>setRoom(normalizeRoom({...DEFAULT_ROOM,images:S.room.images})),
+  "clear-color":d=>setRoom(setColor(S.room,d.slot,null)),
+  "remove-image":d=>{ setRoom(setImage(S.room,d.kind,null)); toast("Picture removed"); },
+  "draw-poster":openDraw,
+  "pad-ink":d=>{ pad.color=d.c; document.querySelectorAll(".ink").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.c===d.c))); },
+  "pad-size":d=>{ pad.size=+d.n; document.querySelectorAll("[data-act=pad-size]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.n===d.n))); },
+  "pad-undo":()=>{ pad.strokes.pop(); paintPad(); },
+  "pad-clear":()=>{ pad.strokes=[]; pad.base=null; paintPad(); },
+  "pad-save":()=>{ const data=$("#pad").toDataURL("image/jpeg",.9); closeOutcome(); setRoom(setImage(S.room,"poster",data)); toast("Your poster is on the wall. Use <b>Move and resize things</b> to place it."); },
+  arrange:startArranging,
+  "arrange-done":()=>{ stopArranging(); if(cur()!=="settings") location.hash="settings"; openPanel(); },
+  nudge:d=>{ nudge(+(d.dx||0),+(d.dy||0),+(d.ds||0)); save(); paintArrange(); document.querySelector(`#arrange-bar [data-act=nudge][data-dx="${d.dx||""}"][data-dy="${d.dy||""}"][data-ds="${d.ds||""}"]`)?.focus(); },
+  "layout-reset":()=>{ S.room=resetLayout(S.room); save(); shownBackdrop=null; applyBackdrop(); paintArrange(); },
+  "open-panel":()=>{ if(!arranging) openPanel(); },
   "board-add":()=>toggleBoardForm($("#board-form").hidden),
   "close-panel":closePanel,
   "filter-cat":d=>{ filter.group=null; filter.category=d.id; filter.text=""; decisionsMode="list"; if(cur()==="decisions") render(); else location.hash="decisions"; },
@@ -554,10 +658,14 @@ document.addEventListener("click",e=>{
   if(el.tagName!=="INPUT") e.preventDefault();
   f(el.dataset);
 });
-document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(recording) closeOutcome(); else if(!$("#board-form").hidden) { toggleBoardForm(false); $("#board-add").focus(); } else if(panelOpen&&inRoom()) closePanel(); });
+document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(recording) closeOutcome(); else if(arranging) A["arrange-done"](); else if(!$("#board-form").hidden) { toggleBoardForm(false); $("#board-add").focus(); } else if(panelOpen&&inRoom()) closePanel(); });
 $("#outcome").addEventListener("click",e=>{ if(e.target.id==="outcome") closeOutcome(); });
 document.addEventListener("change",e=>{
   const el=e.target;
+  if(el.id==="arrange-part"){ selPart=el.value; paintArrange(); $("#arrange-part").focus(); return; }
+  if(el.dataset.color){ setRoom(setColor(S.room,el.dataset.color,el.value)); return; }
+  if(el.dataset.image&&el.files[0]){ const kind=el.dataset.image, max=PICTURES.find(x=>x[0]===kind)[2];
+    shrinkImage(el.files[0],max).then(data=>{ setRoom(setImage(S.room,kind,data)); toast(kind==="poster"?"Your poster is on the wall":"Picture added to your room"); },()=>toast("That file couldn't be read as a picture.")); return; }
   if(el.id==="backdrop-pick"){ S.backdrop=el.value; save(); applyBackdrop(); if(panelOpen) render(); return; }
   if(el.id==="o-category"&&recording){ const t=S.tasks.find(x=>x.id===recording), box=$("#o-related"); if(t&&box) box.innerHTML=relatedHtml(t,el.value); return; }
   if(el.id==="f-category"){ filter.category=el.value||null; refreshDecisions(); }
@@ -565,6 +673,7 @@ document.addEventListener("change",e=>{
 });
 document.addEventListener("input",e=>{
   if(e.target.id==="f-text"){ filter.text=e.target.value; clearTimeout(searchT); searchT=setTimeout(()=>{ const l=$("#decision-list"); if(l) l.innerHTML=decisionList(); },250); }
+  if(e.target.dataset?.color){ S.room=setColor(S.room,e.target.dataset.color,e.target.value); applyBackdrop(); const pv=$("#room-preview"); if(pv) pv.innerHTML=buildRoom(S.room); }   // live while you pick
   if(e.target.id==="capture"){ const er=$("#capture-err"); if(er) er.hidden=true; }
 });
 document.addEventListener("submit",e=>{
@@ -584,9 +693,10 @@ document.addEventListener("submit",e=>{
   if(f.id==="outcome-form"){
     const r=L.parseOutcome({result:$("#o-result").value,decision:$("#o-decision").value,category:$("#o-category").value,sticker:document.querySelector("input[name=o-sticker]:checked")?.value||null});
     if(!r.ok){ const er=$("#o-err"); er.textContent=r.error; er.hidden=false; return; }
-    const id=recording, first=S.tasks.find(t=>t.id===id)?.status!=="done";
+    const id=recording, first=S.tasks.find(t=>t.id===id)?.status!=="done", before=decisionCount();
     closeOutcome(); change(ts=>L.recordOutcome(ts,id,r.value,today()));
-    toast(first?`Decision saved under ${esc(categoryById(r.value.category)?.name??"")}`:"Decision updated");
+    const fresh=collection(decisionCount(),before).fresh;   // anything new for your room?
+    toast(fresh.length?`🎁 New for your room: <b>${fresh.map(x=>esc(x.name)).join(", ")}</b>. Find it in Settings → My room.`:first?`Decision saved under ${esc(categoryById(r.value.category)?.name??"")}`:"Decision updated");
   }
   if(f.id==="name-form"){ S.profile.name=$("#set-name").value.trim(); save(); render(); toast("Name saved"); }
   if(f.id==="pw-form"){ const ok=$("#pw-new").value.length>=8&&$("#pw-new").value===$("#pw-new2").value; if(!ok) return toast("New passwords must match and be at least 8 characters."); auth.changePassword($("#pw-old").value,$("#pw-new").value).then(r=>{ toast(r?"Password changed":"Current password is wrong"); if(r) f.reset(); }); }
