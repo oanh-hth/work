@@ -231,3 +231,16 @@ html[data-mood="alert"] #backdrop .leaf.r{transform:rotate(30deg)}
 html[data-mood="alert"] #backdrop .leaf.c{transform:rotate(9deg) scaleY(.82)}
 html[data-mood="alert"] #backdrop .sway{animation:none}
 @media (prefers-reduced-motion:reduce){#backdrop::after,#backdrop .sky,#backdrop .drink,#backdrop .steam,#backdrop .leaf{transition:none}}
+
+/* ---------- Build your room ---------- */
+.room-preview{aspect-ratio:3/2;max-width:420px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.room-preview svg{width:100%;height:100%;display:block}
+.room-preview svg *{animation:none!important}
+.slot h3{font-size:.85rem;margin:0 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:999px;font-weight:400}
+.chip[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.chip .swatch{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.25);flex:none}
+.board[data-look="white"]{background:#FBFBF8;border:.5em solid #C9CED4;color:#1D2227}
+.board[data-look="white"] .b-title{color:#2B3FC2}
+.board[data-look="white"] .b-note{border-bottom:2px solid #4E7FD9;padding:.15em 0;align-self:flex-start;max-width:100%}

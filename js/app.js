@@ -5,6 +5,7 @@ import * as cloud from "./cloud.js";
 import * as L from "./logic.js";
 import { CATEGORIES, GROUPS, categoryById, categoriesByGroup } from "./categories.js";
 import { THEMES, themeById, STICKERS, stickerById, folderSvg, GROUP_COLORS } from "./art.js";
+import { SLOTS, DEFAULT_ROOM, ROOM_BOARD, normalizeRoom, setSlot, randomRoom, buildRoom, roomTint, roomBoardLook } from "./room.js";
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -12,10 +13,10 @@ const uid=()=>crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).s
 const today=()=>L.todayKey();
 
 /* ---------------- Data ---------------- */
-function fresh(){ return { v:4, savedAt:0, profile:{name:"",email:""}, theme:null, backdrop:"coffee", tasks:[] }; }
+function fresh(){ return { v:4, savedAt:0, profile:{name:"",email:""}, theme:null, backdrop:"coffee", room:{...DEFAULT_ROOM}, tasks:[] }; }
 function normalize(st){
   const f=fresh(); for(const k in f) if(st[k]===undefined) st[k]=f[k];
-  st.tasks=L.migrateTasks(st.tasks||[]);
+  st.tasks=L.migrateTasks(st.tasks||[]); st.room=normalizeRoom(st.room);
   for(const k of ["notes","resources","sketches","inspo","garden","harvests","treats","redeemed","log","scene","streak","lastDone","spent","focusSessions","focusDone","nextKind"]) delete st[k];
   st.v=4; return st;
 }
@@ -24,10 +25,16 @@ let signedIn=false;
 function applyPrefs(){ applyTheme(); applyBackdrop(); }
 /* ---------------- Background scene ---------------- */
 let shownBackdrop=null;
+/** The chosen background. "My room" is drawn from your choices (room.js); the others are ready-made scenes (art.js). */
+function theme(id=S.backdrop){
+  const t=themeById(id);
+  if(t.id!=="custom") return {...t,key:t.id};
+  return {...t,key:"custom:"+JSON.stringify(S.room),svg:buildRoom(S.room),tint:roomTint(S.room),board:{...ROOM_BOARD,look:roomBoardLook(S.room)}};
+}
 function applyBackdrop(){
-  const t=themeById(S.backdrop), el=$("#backdrop"); if(!el) return;
+  const t=theme(), el=$("#backdrop"); if(!el) return;
   document.documentElement.dataset.backdrop=t.id;
-  if(shownBackdrop!==t.id){ el.innerHTML=t.svg; shownBackdrop=t.id; }
+  if(shownBackdrop!==t.key){ el.innerHTML=t.svg; shownBackdrop=t.key; }
   const q=$("#backdrop-pick"); if(q) q.value=t.id;
   applyRoom(); applyRoomState();
 }
@@ -41,7 +48,7 @@ setInterval(()=>{ if(signedIn) applyRoomState(); },5*60*1000);
 /* ---------------- The board on the wall ---------------- */
 // In a room, the main panel is put away and a board hangs on the wall with a summary. Tap it to open the panel.
 let panelOpen=false;
-const inRoom=()=>!!themeById(S.backdrop).board;
+const inRoom=()=>!!theme().board;
 function applyRoom(){
   const room=inRoom()&&!panelOpen;
   document.documentElement.classList.toggle("room",room);
@@ -53,7 +60,7 @@ function applyRoom(){
 }
 /** Scenes fill the screen like object-fit: cover. Map the board's scene coordinates to the screen. */
 function placeBoard(){
-  const spot=themeById(S.backdrop).board, b=$("#board"); if(!spot||!b) return;
+  const spot=theme().board, b=$("#board"); if(!spot||!b) return;
   const W=innerWidth, H=innerHeight, scale=Math.max(W/1200,H/800), ox=(W-1200*scale)/2, oy=(H-800*scale)/2;
   let x=ox+spot.x*scale, y=oy+spot.y*scale, w=spot.w*scale, h=spot.h*scale;
   const top=($(".top")?.offsetHeight??56)+8;
@@ -415,6 +422,25 @@ function folderView(f){
 }
 function refreshDecisions(){ const f=$("#filters"); if(f){ f.innerHTML=filterControls(); } const l=$("#decision-list"); if(l) l.innerHTML=decisionList(); }
 
+/* ---------------- Room builder ---------------- */
+/** One row of choices per slot. Each row is a radio group; the room behind the panel changes as you choose. */
+function roomBuilder(){
+  return `<section class="card stack wide" id="room-builder"><h2>Build your room</h2>
+    <p class="muted" style="font-size:.88rem">Choose each part. The room behind this panel changes as you go: tap <b>Back to the room</b> to see it all.</p>
+    <div class="room-preview" id="room-preview" aria-hidden="true">${buildRoom(S.room)}</div>
+    ${SLOTS.map(s=>`<div class="slot"><h3 id="slot-${s.id}">${esc(s.name)}</h3>
+      <div class="chips" role="radiogroup" aria-labelledby="slot-${s.id}">${s.options.map(o=>`<button type="button" role="radio" class="chip" aria-checked="${S.room[s.id]===o.id}" data-act="set-room" data-slot="${s.id}" data-id="${o.id}">${o.color?`<span class="swatch" style="background:${o.color}"></span>`:""}${esc(o.name)}</button>`).join("")}</div></div>`).join("")}
+    <div class="row"><button class="btn" data-act="room-random">🎲 Surprise me</button><button class="btn" data-act="room-reset">Start again</button></div>
+  </section>`;
+}
+/** Redraw the builder in place, and keep the keyboard focus on the choice just made. */
+function refreshBuilder(slot){
+  const el=$("#room-builder"); if(!el){ render(); return; }
+  const y=scrollY; el.outerHTML=roomBuilder(); scrollTo(0,y);
+  const thumb=document.querySelector('.theme-pick[data-id="custom"] .thumb'); if(thumb){ thumb.innerHTML=buildRoom(S.room); thumb.style.background=roomTint(S.room); }
+  if(slot) document.querySelector(`#room-builder [data-slot="${slot}"][aria-checked="true"]`)?.focus();
+}
+
 /* ---------------- Outcome dialog ---------------- */
 function openOutcome(id){
   const t=S.tasks.find(x=>x.id===id); if(!t) return;
@@ -468,10 +494,11 @@ R.settings=()=>{
       <div id="restore-confirm"></div>
     </section>
     <section class="card stack wide"><h2>Background</h2>
-      <p class="muted" style="font-size:.88rem">An animated scene behind your tasks. Animations stop when Reduce Motion is on.</p>
-      <div class="theme-picks" role="radiogroup" aria-label="Background">${THEMES.map(t=>`<button role="radio" aria-checked="${S.backdrop===t.id}" data-act="set-backdrop" data-id="${t.id}" class="theme-pick">
+      <p class="muted" style="font-size:.88rem">An animated scene behind your tasks. Pick a ready-made room, or <b>My room</b> to put one together yourself. Animations stop when Reduce Motion is on.</p>
+      <div class="theme-picks" role="radiogroup" aria-label="Background">${THEMES.map(x=>theme(x.id)).map(t=>`<button role="radio" aria-checked="${S.backdrop===t.id}" data-act="set-backdrop" data-id="${t.id}" class="theme-pick">
         <span class="thumb" style="background:${t.tint||"var(--paper)"}">${t.svg}</span><span>${esc(t.name)}</span></button>`).join("")}</div>
     </section>
+    ${S.backdrop==="custom"?roomBuilder():""}
     <section class="card stack"><h2>Appearance</h2>
       <div class="seg">${[["","Match device"],["light","Light"],["dark","Dark"]].map(([v,l])=>`<button data-act="set-theme" data-v="${v}" aria-pressed="${(S.theme||"")===v}">${l}</button>`).join("")}</div>
       <h2>Example tasks</h2>
@@ -501,6 +528,9 @@ const A={
   "open-folder":d=>{ openFolder=d.id; render(); $("#view").scrollIntoView?.({block:"start"}); },
   "close-folder":()=>{ openFolder=null; render(); },
   "set-backdrop":d=>{ S.backdrop=d.id; save(); applyBackdrop(); render(); },
+  "set-room":d=>{ S.room=setSlot(S.room,d.slot,d.id); save(); applyBackdrop(); refreshBuilder(d.slot); },
+  "room-random":()=>{ S.room=randomRoom(); save(); applyBackdrop(); refreshBuilder(); },
+  "room-reset":()=>{ S.room={...DEFAULT_ROOM}; save(); applyBackdrop(); refreshBuilder(); },
   "open-panel":openPanel,
   "board-add":()=>toggleBoardForm($("#board-form").hidden),
   "close-panel":closePanel,
