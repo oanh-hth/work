@@ -1,5 +1,5 @@
 // Offline support for Whybook. Network first so updates appear; cache as the fallback.
-const CACHE = 'threadwork-v14';   // prefix kept from the app's first name so old caches are still cleaned up
+const CACHE = 'threadwork-v15';   // prefix kept from the app's first name so old caches are still cleaned up
 const FILES = ['./', 'index.html', 'styles.css', 'manifest.webmanifest',
   'js/app.js', 'js/logic.js', 'js/art.js', 'js/room.js', 'js/categories.js', 'js/store.js', 'js/db.js', 'js/auth.js', 'js/cloud.js',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
@@ -16,6 +16,6 @@ self.addEventListener('fetch', e => {
     return;
   }
   // no-cache: always ask the server for a newer copy (GitHub Pages lets browsers keep files for 10 minutes).
-  e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
+  e.respondWith(fetch(e.request, { cache: 'no-cache' }).catch(() => fetch(e.request)).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
     .catch(() => caches.match(e.request).then(r => r || caches.match('index.html'))));
 });

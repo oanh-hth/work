@@ -13,7 +13,9 @@ const uid=()=>crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).s
 const today=()=>L.todayKey();
 
 /* ---------------- Data ---------------- */
-function fresh(){ return { v:4, savedAt:0, profile:{name:"",email:""}, theme:null, backdrop:"coffee", room:{...DEFAULT_ROOM}, tasks:[] }; }
+/** Shown on the sign-in card and in Settings, so you can tell which version a device is running. Keep in step with CACHE in sw.js. */
+const VERSION=15, VERSION_DATE="16 Nov 2026";
+function fresh(){ return { v:4, savedAt:0, profile:{name:"",email:""}, theme:null, backdrop:"coffee", room:{...DEFAULT_ROOM}, seen:0, tasks:[] }; }
 function normalize(st){
   const f=fresh(); for(const k in f) if(st[k]===undefined) st[k]=f[k];
   st.tasks=L.migrateTasks(st.tasks||[]); st.room=normalizeRoom(st.room);
@@ -268,7 +270,13 @@ function enterApp(){
 async function boot(){
   try{ const st=await store.loadState(); if(st) S=normalize(st); }catch(e){}
   applyPrefs();
-  if("serviceWorker" in navigator && location.protocol!=="file:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+  const ver=$("#version"); if(ver) ver.textContent=`Version ${VERSION} · ${VERSION_DATE}`;
+  if("serviceWorker" in navigator && location.protocol!=="file:"){
+    // Switch to a new version as soon as it is published: ask for sw.js fresh every time, and reload once when a new one takes over.
+    const had=!!navigator.serviceWorker.controller; let reloaded=false;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(had&&!reloaded){ reloaded=true; location.reload(); } });
+    navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>r.update()).catch(()=>{});
+  }
   if(cloud.enabled()){
     try{
       await cloud.init();
@@ -336,6 +344,11 @@ R.tasks=()=>{
   const todo=sorted.filter(t=>t.status==="todo"), done=sorted.filter(t=>t.status==="done");
   const top=s.topCategory&&categoryById(s.topCategory.id);
   return `
+  ${(S.seen||0)<VERSION?`<section class="card start news"><h2>New: make the room yours</h2>
+    <ul><li><b>Build your own room</b>: choose the wall, window, furniture, plant and more, in your own colours.</li>
+    <li><b>Move and resize things</b> by dragging them, and hang <b>your own pictures</b> or a poster you draw.</li>
+    <li><b>Collect</b> new items as you record decisions.</li></ul>
+    <div class="row"><button class="primary" data-act="edit-room">🎨 Build my room</button><button data-act="news-seen">Got it</button></div></section>`:""}
   ${S.tasks.length?"":`<section class="card start"><h2>Start here</h2><ol>
     <li>Type a task below and press <b>Add</b>. Tick <b>Needs a decision</b> when finishing it will mean choosing something.</li>
     <li>Simple tasks: tick them off. Complex tasks: press <b>Record result</b> and write what happened, what you decided, and the topic.</li>
@@ -595,6 +608,8 @@ R.settings=()=>{
       <div class="seg">${[["","Match device"],["light","Light"],["dark","Dark"]].map(([v,l])=>`<button data-act="set-theme" data-v="${v}" aria-pressed="${(S.theme||"")===v}">${l}</button>`).join("")}</div>
       <h2>Example tasks</h2>
       <div>${hasExamples()?`<button class="btn" data-act="remove-examples">Remove example tasks</button>`:`<button class="btn" data-act="add-examples">Add example tasks</button>`}</div>
+      <h2>Version</h2><p class="muted" style="font-size:.88rem">Version ${VERSION} · ${VERSION_DATE}. The app updates itself when you open it with a connection.</p>
+      <div><button class="btn" data-act="update-now">Check for updates</button></div>
       <h2>Erase</h2><p class="muted" style="font-size:.88rem">Removes everything stored on this device and signs you out.</p>
       <div><button class="btn danger" data-act="erase">Erase this device</button></div>
     </section>
@@ -620,6 +635,11 @@ const A={
   "open-folder":d=>{ openFolder=d.id; render(); $("#view").scrollIntoView?.({block:"start"}); },
   "close-folder":()=>{ openFolder=null; render(); },
   "set-backdrop":d=>{ S.backdrop=d.id; save(); applyBackdrop(); render(); },
+  "edit-room":()=>{ S.backdrop="custom"; S.seen=VERSION; save(); if(arranging) stopArranging(); applyBackdrop(); if(cur()!=="settings") location.hash="settings"; else if(!panelOpen) openPanel(); else render(); setTimeout(()=>$("#room-builder")?.scrollIntoView({block:"start"}),80); },
+  "news-seen":()=>{ S.seen=VERSION; save(); render(); },
+  "update-now":async()=>{ toast("Getting the newest version…");   // forget every saved copy of the app's files (never your data), then load again
+    try{ for(const r of await navigator.serviceWorker?.getRegistrations?.()??[]) await r.unregister(); for(const k of await caches?.keys?.()??[]) await caches.delete(k); }catch(e){}
+    location.reload(); },
   "set-room":d=>setRoom(setSlot(S.room,d.slot,d.id),d.slot),
   "room-random":()=>setRoom(randomRoom(Math.random,decisionCount(),S.room)),
   "room-reset":()=>setRoom(normalizeRoom({...DEFAULT_ROOM,images:S.room.images})),

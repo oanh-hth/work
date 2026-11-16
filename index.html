@@ -23,6 +23,7 @@
   <div class="login-card">
     <div class="brand"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="8" cy="9" r="4" fill="var(--accent)"/><circle cx="24" cy="10" r="4" fill="var(--gold)"/><circle cx="15" cy="24" r="4" fill="var(--good)"/><path d="M8 9C16 6 18 16 24 10M8 9c0 8 3 13 7 15M24 10c0 7-4 12-9 14" stroke="var(--ink)" stroke-width="1.6" fill="none"/></svg><span>Whybook</span></div>
     <div id="auth-body" class="stack" style="gap:18px"></div>
+    <p class="muted" id="version" style="font-size:.78rem;margin:0;text-align:center"></p>
   </div>
 </section>
 
@@ -36,6 +37,7 @@
       <a href="#settings">Settings</a>
     </nav>
     <span class="sync" id="sync-top"></span>
+    <button type="button" class="edit-room" data-act="edit-room" aria-label="Build my room">🎨<span> Edit room</span></button>
     <label class="backdrop-pick"><span class="visually-hidden">Background</span>
       <select id="backdrop-pick" aria-label="Background">
         <option value="coffee">☕ Coffee shop</option><option value="cozy">🛋️ Cozy room</option><option value="library">📚 Library</option>

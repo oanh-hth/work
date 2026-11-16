@@ -291,3 +291,8 @@ html.arranging #app .top,html.arranging #app .board{pointer-events:auto}
 html.arranging #backdrop .glow{pointer-events:none}   /* a lamp's soft glow never grabs the touch: only solid shapes do */
 html.arranging #toast{bottom:auto;top:calc(72px + env(safe-area-inset-top,0px))}   /* keep messages clear of the controls */
 @media (max-width:560px){.arrange-bar .hint{display:none}.arrange-bar{gap:6px 8px;padding:8px}}
+
+/* ---------- Ways in to My room, and what's new ---------- */
+.edit-room{min-height:34px;padding:4px 12px;border-radius:999px;font-size:.85rem;white-space:nowrap}
+@media (max-width:640px){.edit-room span{display:none}}
+.news ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
