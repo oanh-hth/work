@@ -1,0 +1,13 @@
+{
+  "name": "whybook-smoke-test",
+  "private": true,
+  "type": "module",
+  "description": "Opens the Whybook app in a real browser and checks the things a person needs: sign in, add a task, record a decision, build a room.",
+  "scripts": {
+    "test": "node smoke.mjs",
+    "setup": "npm install && npx playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

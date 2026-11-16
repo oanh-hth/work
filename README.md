@@ -24,6 +24,14 @@ No build step and no server of its own: a static web app with optional sync thro
 
 The same app is built step by step, in TypeScript, React and Node.js, in the course in [`course/`](course/README.md).
 
+## Before you push a change
+```
+cd tests
+npm run setup    # once
+npm test
+```
+This opens the app in a real browser and checks that a person can sign in, add a task, record a decision and build a room, and that nothing they need is hidden. See [`tests/README.md`](tests/README.md). When you release, raise `VERSION` in `js/app.js` and `CACHE` in `sw.js` together (the test checks they match), and afterwards look at the repository's **Actions** tab to see that the site was published.
+
 ## Run it locally
 From the repository root:
 ```
