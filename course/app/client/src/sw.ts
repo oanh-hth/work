@@ -3,7 +3,7 @@
 import { strategyFor } from "@app/client/src/pwa/strategy";
 
 declare const self: ServiceWorkerGlobalScope;
-const CACHE = "whybook-v1";
+const CACHE = "whybook-v1";   // raise this with VERSION in version.ts for every release (11e)
 
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(["/", "/manifest.webmanifest"])).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {

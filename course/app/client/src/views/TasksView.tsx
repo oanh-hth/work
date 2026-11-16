@@ -1,6 +1,7 @@
 // Given: the Tasks page. Uses weekSummary (2.4), QuickCapture (3.2), TaskList (3.3), OutcomeForm (3.4), StickerPicker (8.4)
 // and, while you record a result, the earlier decisions that may help (9.1, 9.2).
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useApp } from "@app/client/src/state/AppContext";
 import { QuickCapture } from "@app/client/src/components/QuickCapture";
 import { TaskList } from "@app/client/src/components/TaskList";
@@ -61,7 +62,9 @@ export function TasksView({ editId, onEdited }: { editId: string | null; onEdite
           onReopen={id => dispatch({ type: "reopen", id })}
           onDelete={id => dispatch({ type: "delete", id })} />
       </ErrorBoundary>
-      {task && (
+      {/* A portal: the overlay is drawn at the top of the page, not inside the see-through panel. The panel's blur
+          (backdrop-filter) would otherwise make "position: fixed" mean "fixed to the panel", and the form could land off screen. */}
+      {task && createPortal(
         <div className="overlay">
           <div className="outcome-stack">
             <ErrorBoundary area="The outcome form">
@@ -76,7 +79,7 @@ export function TasksView({ editId, onEdited }: { editId: string | null; onEdite
             <ErrorBoundary area="Stickers"><StickerPicker value={sticker} onChange={setSticker} /></ErrorBoundary>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }

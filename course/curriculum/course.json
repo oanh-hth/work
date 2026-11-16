@@ -277,6 +277,39 @@
           "title": "The room builder"
         }
       ]
+    },
+    {
+      "id": "11",
+      "folder": "part-11",
+      "slug": "make-it-yours",
+      "title": "Make it yours",
+      "sections": [
+        {
+          "id": "a",
+          "file": "curriculum/part-11/a-your-colours.md",
+          "title": "Your colours"
+        },
+        {
+          "id": "b",
+          "file": "curriculum/part-11/b-move-and-resize.md",
+          "title": "Move and resize"
+        },
+        {
+          "id": "c",
+          "file": "curriculum/part-11/c-your-pictures.md",
+          "title": "Your pictures"
+        },
+        {
+          "id": "d",
+          "file": "curriculum/part-11/d-a-collection.md",
+          "title": "A collection to earn"
+        },
+        {
+          "id": "e",
+          "file": "curriculum/part-11/e-shipping-updates.md",
+          "title": "Shipping updates"
+        }
+      ]
     }
   ],
   "exercises": [
@@ -859,6 +892,90 @@
       ],
       "lesson": "curriculum/part-10/b-the-room-builder.md",
       "manual": true
+    },
+    {
+      "id": "11.1",
+      "part": "11",
+      "section": "a",
+      "slug": "colors",
+      "title": "Your own colours",
+      "files": [
+        "app/shared/colors.ts"
+      ],
+      "lesson": "curriculum/part-11/a-your-colours.md",
+      "test": "tests/part-11/11.1-colors.test.ts"
+    },
+    {
+      "id": "11.2",
+      "part": "11",
+      "section": "b",
+      "slug": "layout",
+      "title": "Move and resize",
+      "files": [
+        "app/shared/layout.ts"
+      ],
+      "lesson": "curriculum/part-11/b-move-and-resize.md",
+      "test": "tests/part-11/11.2-layout.test.ts"
+    },
+    {
+      "id": "11.3",
+      "part": "11",
+      "section": "b",
+      "slug": "arrange-bar",
+      "title": "ArrangeBar",
+      "files": [
+        "app/client/src/components/ArrangeBar.tsx"
+      ],
+      "lesson": "curriculum/part-11/b-move-and-resize.md",
+      "test": "tests/part-11/11.3-arrange-bar.test.tsx"
+    },
+    {
+      "id": "11.4",
+      "part": "11",
+      "section": "c",
+      "slug": "pictures",
+      "title": "Your pictures",
+      "files": [
+        "app/shared/pictures.ts"
+      ],
+      "lesson": "curriculum/part-11/c-your-pictures.md",
+      "test": "tests/part-11/11.4-pictures.test.ts"
+    },
+    {
+      "id": "11.5",
+      "part": "11",
+      "section": "c",
+      "slug": "strokes",
+      "title": "A drawing as data",
+      "files": [
+        "app/shared/strokes.ts"
+      ],
+      "lesson": "curriculum/part-11/c-your-pictures.md",
+      "test": "tests/part-11/11.5-strokes.test.ts"
+    },
+    {
+      "id": "11.6",
+      "part": "11",
+      "section": "d",
+      "slug": "collection",
+      "title": "A collection to earn",
+      "files": [
+        "app/shared/collection.ts"
+      ],
+      "lesson": "curriculum/part-11/d-a-collection.md",
+      "test": "tests/part-11/11.6-collection.test.ts"
+    },
+    {
+      "id": "11.7",
+      "part": "11",
+      "section": "e",
+      "slug": "version-info",
+      "title": "VersionInfo",
+      "files": [
+        "app/client/src/components/VersionInfo.tsx"
+      ],
+      "lesson": "curriculum/part-11/e-shipping-updates.md",
+      "test": "tests/part-11/11.7-version-info.test.tsx"
     }
   ]
 }

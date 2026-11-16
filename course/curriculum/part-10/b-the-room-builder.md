@@ -86,4 +86,4 @@ Build `RoomBuilder`: a section named "Build your room" with, per slot, a heading
 
 ---
 
-[← 10a A room from data](a-a-room-from-data.md) · [Back to the course overview →](../../README.md)
+[← 10a A room from data](a-a-room-from-data.md) · [Part 11: Make it yours →](../part-11/README.md)

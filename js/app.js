@@ -14,7 +14,7 @@ const today=()=>L.todayKey();
 
 /* ---------------- Data ---------------- */
 /** Shown on the sign-in card and in Settings, so you can tell which version a device is running. Keep in step with CACHE in sw.js. */
-const VERSION=15, VERSION_DATE="16 Nov 2026";
+const VERSION=16, VERSION_DATE="16 Nov 2026";
 function fresh(){ return { v:4, savedAt:0, profile:{name:"",email:""}, theme:null, backdrop:"coffee", room:{...DEFAULT_ROOM}, seen:0, tasks:[] }; }
 function normalize(st){
   const f=fresh(); for(const k in f) if(st[k]===undefined) st[k]=f[k];
@@ -105,6 +105,8 @@ function openPanel(){
 }
 function closePanel(){ panelOpen=false; closeOutcome(); applyRoom(); scrollTo(0,0); }
 addEventListener("resize",()=>{ if(inRoom()&&!panelOpen) placeBoard(); });
+// The header wraps onto more lines on narrow screens and when the fonts arrive: keep the board under it.
+if(window.ResizeObserver&&$(".top")) new ResizeObserver(()=>{ if(signedIn&&inRoom()&&!panelOpen) placeBoard(); }).observe($(".top"));
 const stickerImg=(id,cls="sticker")=>{ const st=stickerById(id); return st?`<span class="${cls}" role="img" aria-label="Sticker: ${esc(st.name)}">${st.svg}</span>`:""; };
 
 function exampleTasks(){
