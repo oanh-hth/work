@@ -12,7 +12,7 @@ function Controlled({ start, onChange }: { start: string; onChange?: (id: string
 describe("8.1 ThemePicker", () => {
   it("is a radio group of themes with previews", () => {
     render(<ThemePicker value="cozy" onChange={() => {}} />);
-    expect(screen.getAllByRole("radio")).toHaveLength(6);
+    expect(screen.getAllByRole("radio")).toHaveLength(7);
     for (const name of ["Coffee shop", "Cozy room", "Library", "Rainy window", "Night city", "Plain"]) expect(screen.getByRole("radio", { name })).toBeInTheDocument();
     expect(screen.getByRole("radiogroup", { name: "Background" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Cozy room" })).toHaveAttribute("aria-checked", "true");
@@ -21,7 +21,7 @@ describe("8.1 ThemePicker", () => {
   });
   it("has one tab stop: the checked theme", () => {
     render(<ThemePicker value="library" onChange={() => {}} />);
-    expect(screen.getAllByRole("radio").map(r => r.getAttribute("tabindex"))).toEqual(["-1", "-1", "0", "-1", "-1", "-1"]);
+    expect(screen.getAllByRole("radio").map(r => r.getAttribute("tabindex"))).toEqual(["-1", "-1", "0", "-1", "-1", "-1", "-1"]);
   });
   it("chooses by click", async () => {
     const onChange = vi.fn();
@@ -36,7 +36,7 @@ describe("8.1 ThemePicker", () => {
     await userEvent.keyboard("{ArrowRight}");
     expect(screen.getByRole("radio", { name: "Coffee shop" })).toHaveFocus();
     await userEvent.keyboard("{ArrowLeft}{ArrowLeft}");
-    expect(onChange.mock.calls.map(c => c[0])).toEqual(["coffee", "plain", "city"]);
-    expect(screen.getByRole("radio", { name: "Night city" })).toHaveAttribute("aria-checked", "true");
+    expect(onChange.mock.calls.map(c => c[0])).toEqual(["coffee", "plain", "custom"]);
+    expect(screen.getByRole("radio", { name: "My room" })).toHaveAttribute("aria-checked", "true");
   });
 });

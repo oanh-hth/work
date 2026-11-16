@@ -1,5 +1,5 @@
 // Exercise 8.9: WallBoard. Read curriculum/part-8/d-the-board.md first.
-import type { BoardNotes } from "@app/shared/board";
+import type { BoardNotes, BoardSpot } from "@app/shared/board";
 import { Todo } from "@app/client/src/components/Todo";
 
 /**
@@ -14,7 +14,7 @@ import { Todo } from "@app/client/src/components/Todo";
  *   - <span className="b-open">Tap to open</span>
  * Only <span>s inside: a <button> may hold phrasing content only, no <div>, <p> or <h2>.
  */
-export function WallBoard({ notes, look, onOpen }: { notes: BoardNotes; look: "chalk" | "cork"; onOpen: () => void }) {
+export function WallBoard({ notes, look, onOpen }: { notes: BoardNotes; look: BoardSpot["look"]; onOpen: () => void }) {
   // TODO 8.9
   return <Todo exercise="8.9" what="The board on the wall" />;
 }

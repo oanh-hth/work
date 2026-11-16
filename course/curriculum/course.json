@@ -259,6 +259,24 @@
           "title": "A room that reacts"
         }
       ]
+    },
+    {
+      "id": "10",
+      "folder": "part-10",
+      "slug": "own-room",
+      "title": "Build your own room",
+      "sections": [
+        {
+          "id": "a",
+          "file": "curriculum/part-10/a-a-room-from-data.md",
+          "title": "A room from data"
+        },
+        {
+          "id": "b",
+          "file": "curriculum/part-10/b-the-room-builder.md",
+          "title": "The room builder"
+        }
+      ]
     }
   ],
   "exercises": [
@@ -805,6 +823,42 @@
       ],
       "lesson": "curriculum/part-9/c-a-room-that-reacts.md",
       "test": "tests/part-9/9.4-room.test.ts"
+    },
+    {
+      "id": "10.1",
+      "part": "10",
+      "section": "a",
+      "slug": "room-choices",
+      "title": "The rules of a room",
+      "files": [
+        "app/shared/room-choices.ts"
+      ],
+      "lesson": "curriculum/part-10/a-a-room-from-data.md",
+      "test": "tests/part-10/10.1-room-choices.test.ts"
+    },
+    {
+      "id": "10.2",
+      "part": "10",
+      "section": "b",
+      "slug": "room-builder",
+      "title": "RoomBuilder",
+      "files": [
+        "app/client/src/components/RoomBuilder.tsx"
+      ],
+      "lesson": "curriculum/part-10/b-the-room-builder.md",
+      "test": "tests/part-10/10.2-room-builder.test.tsx"
+    },
+    {
+      "id": "10.3",
+      "part": "10",
+      "section": "b",
+      "slug": "own-option",
+      "title": "Draw your own option",
+      "files": [
+        "app/client/src/art/room.ts"
+      ],
+      "lesson": "curriculum/part-10/b-the-room-builder.md",
+      "manual": true
     }
   ]
 }

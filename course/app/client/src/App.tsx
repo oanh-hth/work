@@ -5,8 +5,10 @@ import { createApi, type Api } from "@app/client/src/api/client";
 import { AppProvider, useApp } from "@app/client/src/state/AppContext";
 import type { AppState } from "@app/shared/types";
 import type { AppAction } from "@app/client/src/state/rootReducer";
-import { Backdrop, THEMES } from "@app/client/src/components/Art";
-import { themeById } from "@app/client/src/art/art";
+import { Backdrop, THEMES, RoomContext, sceneFor } from "@app/client/src/components/Art";
+import type { Theme } from "@app/client/src/art/art";
+import { SLOTS, DEFAULT_ROOM } from "@app/client/src/art/room";
+import { normalizeRoom, type Room } from "@app/shared/room-choices";
 import { placeBoard, boardNotes } from "@app/shared/board";
 import { WallBoard } from "@app/client/src/components/WallBoard";
 import { BoardQuickAdd } from "@app/client/src/components/BoardQuickAdd";
@@ -83,7 +85,10 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
   useEffect(() => { document.documentElement.dataset.backdrop = backdrop; }, [backdrop]);
   useRoomState();
   // In a room (any scene with a board), the tasks hang on the wall until you open them (8.8, 8.9).
-  const spot = themeById(backdrop).board;
+  // The room you built (Part 10). Whatever was saved is checked first (10.1); until 10.1 is done, the default room is used.
+  const [savedRoom, setRoom] = useLocalStorage<unknown>("whybook.room", DEFAULT_ROOM);
+  const room = useMemo<Room>(() => { try { return normalizeRoom(SLOTS, DEFAULT_ROOM, savedRoom); } catch { return DEFAULT_ROOM; } }, [savedRoom]);
+  const spot = sceneFor(backdrop, room).board;
   const [open, setOpen] = useState(false);
   const inRoom = !!spot && !open;
   useEffect(() => {
@@ -93,6 +98,7 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
     return () => window.removeEventListener("keydown", onKey);
   }, [spot, open]);
   return (
+    <RoomContext.Provider value={room}>
     <div className="shell">
       <Backdrop id={backdrop} />
       <header className="top">
@@ -117,11 +123,12 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
               <ErrorBoundary key={route} area={ROUTE_NAMES[route]}>
                 {route === "tasks" && <TasksView editId={editId} onEdited={() => setEditId(null)} />}
                 {route === "decisions" && <DecisionsView onEdit={id => { setEditId(id); navigate("tasks"); }} />}
-                {route === "settings" && <SettingsView onSignOut={onSignOut} syncText={syncText(status)} backdrop={backdrop} onBackdrop={setBackdrop} />}
+                {route === "settings" && <SettingsView onSignOut={onSignOut} syncText={syncText(status)} backdrop={backdrop} onBackdrop={setBackdrop} room={room} onRoom={setRoom} />}
               </ErrorBoundary>
             </main>
           </>}
     </div>
+    </RoomContext.Provider>
   );
 }
 
@@ -143,7 +150,7 @@ function useRoomState() {
 }
 
 /** Hangs your WallBoard (8.9) on the wall, at the spot placeBoard (8.8) works out for this screen. */
-function Board({ spot, onOpen }: { spot: NonNullable<ReturnType<typeof themeById>["board"]>; onOpen: () => void }) {
+function Board({ spot, onOpen }: { spot: NonNullable<Theme["board"]>; onOpen: () => void }) {
   const { state, dispatch } = useApp();
   const [adding, setAdding] = useState(false);
   const [viewport, setViewport] = useState({ width: innerWidth, height: innerHeight });

@@ -4,7 +4,7 @@ import { weekSummary } from "@app/shared/summary";
 import { sortTasks } from "@app/shared/collections";
 
 /** A spot on a scene's wall, in the scene's own 1200 × 800 coordinates, and how the board looks there. */
-export interface BoardSpot { x: number; y: number; w: number; h: number; look: "chalk" | "cork" }
+export interface BoardSpot { x: number; y: number; w: number; h: number; look: "chalk" | "cork" | "white" }
 /** Where the board goes on the screen, in CSS pixels. */
 export interface ScreenRect { left: number; top: number; width: number; height: number; fontSize: number }
 export interface Viewport { width: number; height: number }

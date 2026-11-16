@@ -57,9 +57,9 @@ React never touches the SVG again. This is "derive, don't store" one level furth
 
 Yes, in an effect. `document.documentElement` is outside React's tree, like the document title or browser focus, and `useEffect` exists to synchronise such things with state. The shell's `useRoomState` hook does exactly that, with `[state.tasks, hour]` as dependencies.
 
-## You've finished
+## Where the app stands
 
-The app now captures tasks quickly, keeps what you decided and why, hands it back when you need it, and is a place you like opening. Every part of it is yours: the types, the reducer, the components, the server, the drawings. From here, change it. Some ideas, roughly from small to large:
+The app now captures tasks quickly, keeps what you decided and why, hands it back when you need it, and is a place you like opening. Every part of it is yours: the types, the reducer, the components, the server, the drawings. One part is left: making the room itself yours (Part 10). After that, change anything. Some ideas, roughly from small to large:
 
 - mark a decision as replaced by a newer one;
 - file a decision under more than one category;
@@ -87,4 +87,4 @@ Write `timeOfDay(hour)` and `roomState(tasks, today, hour)`: the part of the day
 
 ---
 
-[← 9b Add from the board](b-add-from-the-board.md) · [Back to the course overview →](../../README.md)
+[← 9b Add from the board](b-add-from-the-board.md) · [Part 10: Build your own room →](../part-10/README.md)

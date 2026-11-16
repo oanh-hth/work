@@ -1,19 +1,31 @@
 // Given: React wrappers around the SVG art. The SVG strings are our own, so injecting them is safe.
 // Never use dangerouslySetInnerHTML with text that a user or another site could control.
-import { GROUP_COLORS, THEMES, folderSvg, themeById } from "@app/client/src/art/art";
+import { createContext, useContext } from "react";
+import { GROUP_COLORS, THEMES, folderSvg, themeById, type Theme } from "@app/client/src/art/art";
+import { DEFAULT_ROOM, ROOM_BOARD, buildRoom, roomBoardLook, roomTint } from "@app/client/src/art/room";
+import type { Room } from "@app/shared/room-choices";
+
+/** The room you built (Part 10). The app shell provides it; scenes read it, so ThemePicker needn't know about it. */
+export const RoomContext = createContext<Room>(DEFAULT_ROOM);
+
+/** The theme with this id. "My room" is drawn from the room; the others are ready-made. */
+export function sceneFor(id: string, room: Room): Theme {
+  const t = themeById(id);
+  return t.id === "custom" ? { ...t, svg: buildRoom(room), tint: roomTint(room), board: { ...ROOM_BOARD, look: roomBoardLook(room) } } : t;
+}
 
 export function FolderArt({ group, stickers }: { group: string; stickers: string[] }) {
   return <span className="folder-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: folderSvg(GROUP_COLORS[group] ?? "#8A93A6", stickers) }} />;
 }
 
 export function SceneThumb({ id }: { id: string }) {
-  const t = themeById(id);
+  const t = sceneFor(id, useContext(RoomContext));
   return <span className="thumb" aria-hidden="true" style={{ background: t.tint || "var(--paper)" }} dangerouslySetInnerHTML={{ __html: t.svg }} />;
 }
 
 /** The animated scene behind the whole app. */
 export function Backdrop({ id }: { id: string }) {
-  const t = themeById(id);
+  const t = sceneFor(id, useContext(RoomContext));
   return <div className="backdrop" aria-hidden="true" dangerouslySetInnerHTML={{ __html: t.svg }} />;
 }
 

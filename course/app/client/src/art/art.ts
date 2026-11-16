@@ -164,6 +164,7 @@ export const THEMES: Theme[] = [
   { id: "library", name: "Library", svg: library, tint: "#3E2F28", board: { x: 70, y: 196, w: 290, h: 196, look: "cork" } },
   { id: "rainy", name: "Rainy window", svg: rainy, tint: "#4B5868", board: { x: 700, y: 378, w: 300, h: 196, look: "cork" } },
   { id: "city", name: "Night city", svg: city, tint: "#1A1A33", board: { x: 90, y: 330, w: 300, h: 200, look: "cork" } },
+  { id: "custom", name: "My room", svg: "", tint: "", board: null },   // drawn from your choices (Part 10): see room.ts and sceneFor in components/Art.tsx
   { id: "plain", name: "Plain", svg: "", tint: "", board: null },
 ];
 export const themeById = (id: string): Theme => THEMES.find(t => t.id === id) ?? THEMES[0]!;

@@ -10,7 +10,7 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     const { error } = this.state;
     if (!error) return this.props.children;
-    const todo = /TODO (\d\.\d)/.exec(error.message)?.[1];
+    const todo = /TODO (\d+\.\d+)/.exec(error.message)?.[1];
     return (
       <div className="todo" role="note">
         <b>{this.props.area}</b>{" "}

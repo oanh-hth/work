@@ -1,9 +1,9 @@
 import type { CSSProperties } from "react";
-import type { BoardNotes } from "@app/shared/board";
+import type { BoardNotes, BoardSpot } from "@app/shared/board";
 
 const TILTS = [-3, 2, -1];
 
-export function WallBoard({ notes, look, onOpen }: { notes: BoardNotes; look: "chalk" | "cork"; onOpen: () => void }) {
+export function WallBoard({ notes, look, onOpen }: { notes: BoardNotes; look: BoardSpot["look"]; onOpen: () => void }) {
   const { open, overdue, doneToday, next } = notes;
   return (
     <button type="button" className="board" data-look={look} onClick={onOpen}
