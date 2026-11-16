@@ -1,6 +1,6 @@
-# Learn to build Threadwork
+# Learn to build Whybook
 
-A self-paced course in **TypeScript, React and Node.js**, in the style of [Full Stack Open](https://fullstackopen.com). You build **Threadwork**, a todo list that remembers what you learned:
+A self-paced course in **TypeScript, React and Node.js**, in the style of [Full Stack Open](https://fullstackopen.com). You build **Whybook**, a todo list that remembers what you learned:
 
 - every task is **simple** (just tick it) or **complex**;
 - when you finish a complex task you write down the **result** and your **decision**, and file it under a **web development category** (HTML, CSS, Layout, Accessibility, React, State management, Performance, Testing, Node.js, APIs, Deployment…);
@@ -8,14 +8,14 @@ A self-paced course in **TypeScript, React and Node.js**, in the style of [Full 
 - it **hands decisions back**: when you record a new result, earlier decisions on the same topic appear next to it;
 - it's a nice place to be: **animated rooms** (coffee shop, cozy room, library, rainy window, night city) that reflect your day (light by the clock, coffee cups that empty as you work, plants that droop when something is overdue), with your tasks on a **board on the wall** you can add to, **stickers** on decisions, and a shelf of **illustrated folders**, one per topic.
 
-The course is split into **parts**, and each part into **sections**. A section teaches the ideas you need, with examples from Threadwork, and ends with **exercises** that build the next piece of the app. Most exercises have tests that tell you when you're done. **When you finish the last exercise, Threadwork is finished**, deployed and on your iPad's home screen.
+The course is split into **parts**, and each part into **sections**. A section teaches the ideas you need, with examples from Whybook, and ends with **exercises** that build the next piece of the app. Most exercises have tests that tell you when you're done. **When you finish the last exercise, Whybook is finished**, deployed and on your iPad's home screen.
 
 ## Parts
 
 | Part | What it covers | Sections | Exercises |
 |---|---|---|---|
-| **[Part 0: Fundamentals](curriculum/part-0/README.md)** | How the course works, the tools you need, and how a web app like Threadwork fits together: browser, server, data. | [0a](curriculum/part-0/a-how-this-course-works.md) · [0b](curriculum/part-0/b-how-threadwork-works.md) | 0.1–0.3 |
-| **[Part 1: TypeScript and the task model](curriculum/part-1/README.md)** | TypeScript through Threadwork's data: tasks, outcomes and the category list. Types, unions, records, immutable updates, generics and validating data from outside. | [1a](curriculum/part-1/a-types-and-objects.md) · [1b](curriculum/part-1/b-unions-and-records.md) · [1c](curriculum/part-1/c-immutable-updates.md) · [1d](curriculum/part-1/d-generics-and-unknown.md) | 1.1–1.4 |
+| **[Part 0: Fundamentals](curriculum/part-0/README.md)** | How the course works, the tools you need, and how a web app like Whybook fits together: browser, server, data. | [0a](curriculum/part-0/a-how-this-course-works.md) · [0b](curriculum/part-0/b-how-whybook-works.md) | 0.1–0.3 |
+| **[Part 1: TypeScript and the task model](curriculum/part-1/README.md)** | TypeScript through Whybook's data: tasks, outcomes and the category list. Types, unions, records, immutable updates, generics and validating data from outside. | [1a](curriculum/part-1/a-types-and-objects.md) · [1b](curriculum/part-1/b-unions-and-records.md) · [1c](curriculum/part-1/c-immutable-updates.md) · [1d](curriculum/part-1/d-generics-and-unknown.md) | 1.1–1.4 |
 | **[Part 2: The app's logic: dates, a reducer and queries](curriculum/part-2/README.md)** | The app's logic as pure functions: dates, one reducer for every change, and the queries behind the decision log and the weekly summary. | [2a](curriculum/part-2/a-pure-functions-and-dates.md) · [2b](curriculum/part-2/b-reducers.md) · [2c](curriculum/part-2/c-queries.md) | 2.1–2.4 |
 | **[Part 3: React components](curriculum/part-3/README.md)** | React components: the task row, quick capture, the task list, and the outcome form where a complex task gets its result, decision and category. | [3a](curriculum/part-3/a-components-and-props.md) · [3b](curriculum/part-3/b-state-and-forms.md) · [3c](curriculum/part-3/c-lists-and-composition.md) · [3d](curriculum/part-3/d-the-outcome-form.md) | 3.1–3.4 |
 | **[Part 4: State, hooks and navigation](curriculum/part-4/README.md)** | One state for the app: custom hooks, saving on the device, useReducer and Context, navigation between pages, and debounced search. After this part the real app runs. | [4a](curriculum/part-4/a-custom-hooks.md) · [4b](curriculum/part-4/b-reducer-and-context.md) · [4c](curriculum/part-4/c-navigation-and-search.md) | 4.1–4.4 |

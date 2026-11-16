@@ -1,4 +1,4 @@
-// Given: the app shell. It puts your components together into the finished Threadwork.
+// Given: the app shell. It puts your components together into the finished Whybook.
 // You don't need to change it, but reading it shows how every piece connects.
 import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch } from "react";
 import { createApi, type Api } from "@app/client/src/api/client";
@@ -32,14 +32,14 @@ export function App() {
 }
 
 function Main() {
-  const [token, setToken] = useLocalStorage<string | null>("threadwork.token", null);
+  const [token, setToken] = useLocalStorage<string | null>("whybook.token", null);
   const [mode, setMode] = useState<"login" | "register">("login");
   const api = useMemo(() => (token && token !== OFFLINE ? createApi({ getToken: () => token }) : null), [token]);
   if (!token) {
     const anon = createApi();
     return (
       <main className="center">
-        <h1 className="brand-big">Threadwork</h1>
+        <h1 className="brand-big">Whybook</h1>
         <p className="muted">Tasks, results and the decisions you make along the way.</p>
         <ErrorBoundary area="Sign-in">
           <LoginForm mode={mode} onSwitchMode={() => setMode(m => (m === "login" ? "register" : "login"))}
@@ -79,7 +79,7 @@ function syncText(status: SyncStatus): string {
 function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve: (k: "this" | "other") => void; onSignOut: () => void }) {
   const [route, navigate] = useHashRoute(ROUTES, "tasks");
   const [editId, setEditId] = useState<string | null>(null);
-  const [backdrop, setBackdrop] = useLocalStorage("threadwork.backdrop", "coffee");
+  const [backdrop, setBackdrop] = useLocalStorage("whybook.backdrop", "coffee");
   useEffect(() => { document.documentElement.dataset.backdrop = backdrop; }, [backdrop]);
   useRoomState();
   // In a room (any scene with a board), the tasks hang on the wall until you open them (8.8, 8.9).
@@ -96,7 +96,7 @@ function Shell({ status, onResolve, onSignOut }: { status: SyncStatus; onResolve
     <div className="shell">
       <Backdrop id={backdrop} />
       <header className="top">
-        <strong className="brand">Threadwork</strong>
+        <strong className="brand">Whybook</strong>
         <nav aria-label="Main" className="tabs">
           {ROUTES.map(r => <a key={r} href={`#${r}`} aria-current={route === r && !inRoom ? "page" : undefined} onClick={() => setOpen(true)}>{ROUTE_NAMES[r]}</a>)}
         </nav>

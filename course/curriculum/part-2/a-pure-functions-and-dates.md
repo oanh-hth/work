@@ -19,7 +19,7 @@ The first gives a different answer tomorrow, so a test written today fails tomor
 
 ## Days as strings
 
-Threadwork stores a calendar day as `"2026-11-14"`. It's readable, it's JSON-friendly, and it compares correctly with `<`.
+Whybook stores a calendar day as `"2026-11-14"`. It's readable, it's JSON-friendly, and it compares correctly with `<`.
 
 To do arithmetic, convert to milliseconds, add, and convert back. Work in **UTC**: local time has days of 23 or 25 hours around daylight-saving changes.
 

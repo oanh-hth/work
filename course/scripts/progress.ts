@@ -47,5 +47,5 @@ writeFileSync(path.join(root, "PROGRESS.md"), ["# Your progress", "",
 console.log("\n" + out.join("\n"));
 const bar = "█".repeat(Math.round(pct / 5)) + "░".repeat(20 - Math.round(pct / 5));
 console.log(`\n${bar} ${pct}%  ${done}/${total} exercises · ${checksDone}/${checksTotal} knowledge checks`);
-console.log(next ? `Next: ${c.bold(`npm run ex ${next}`)}` : c.green("Every exercise is done. Threadwork is finished: it's yours."));
+console.log(next ? `Next: ${c.bold(`npm run ex ${next}`)}` : c.green("Every exercise is done. Whybook is finished: it's yours."));
 console.log(c.dim("Checklist saved to PROGRESS.md"));

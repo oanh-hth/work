@@ -2,7 +2,7 @@
 
 *[Part 8: Themes, stickers and folders](README.md) · section a*
 
-Threadwork works. Part 8 makes it a place you like to sit in: an animated scene behind your tasks, stickers on your decisions, and a shelf of folders to keep them in. First, the scenes.
+Whybook works. Part 8 makes it a place you like to sit in: an animated scene behind your tasks, stickers on your decisions, and a shelf of folders to keep them in. First, the scenes.
 
 ## SVG is a drawing you can write
 

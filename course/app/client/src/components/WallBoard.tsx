@@ -4,7 +4,7 @@ import { Todo } from "@app/client/src/components/Todo";
 
 /**
  * One <button type="button" className="board" data-look={look}> that fills the spot the app shell gives it, and calls onOpen.
- * - aria-label: "Open Threadwork: <open> to do, <doneToday> done today"
+ * - aria-label: "Open Whybook: <open> to do, <doneToday> done today"
  * - inside, a <span className="board-body"> with:
  *   - <span className="b-title">Today</span>
  *   - <span className="b-stats">: "<open> to do · <doneToday> done", with " · <overdue> overdue" after "to do" only when overdue > 0

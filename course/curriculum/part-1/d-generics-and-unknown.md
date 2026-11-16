@@ -2,7 +2,7 @@
 
 *[Part 1: TypeScript and the task model](README.md) · section d*
 
-Two last TypeScript tools: **generics**, for functions that work with any type, and safe handling of **data from outside**, which is how Threadwork makes sure every decision is complete.
+Two last TypeScript tools: **generics**, for functions that work with any type, and safe handling of **data from outside**, which is how Whybook makes sure every decision is complete.
 
 ## Generics
 

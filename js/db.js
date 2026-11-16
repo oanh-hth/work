@@ -1,5 +1,5 @@
 // Tiny key-value store on IndexedDB (falls back to localStorage if IndexedDB is unavailable).
-const NAME = "threadwork", STORE = "kv";
+const NAME = "threadwork", STORE = "kv";   // the app's first name: kept so data saved before the rename to Whybook is still found
 let opening = null;
 
 function open() {

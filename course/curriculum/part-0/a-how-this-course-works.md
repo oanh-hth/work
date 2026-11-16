@@ -2,7 +2,7 @@
 
 *[Part 0: Fundamentals](README.md) · section a*
 
-Welcome. In this course you build **Threadwork**, a todo list that remembers what you learned.
+Welcome. In this course you build **Whybook**, a todo list that remembers what you learned.
 
 Every task is either **simple** or **complex**. A simple task, like "reply to Minh", you just tick off. A complex task, like "choose how to lay out the board", ends with two things you write down: the **result** (what happened, what you found out) and your **decision** (what you chose, and why). Each decision goes into a **category**: a web development topic such as CSS, Layout, Accessibility, React, State management or Node.js. Later, the **decision log** lets you filter everything you've decided by topic. It's a personal record of how you work, and a study notebook that writes itself.
 
@@ -10,7 +10,7 @@ The course teaches **TypeScript, React and Node.js** by building that app, one p
 
 ## How the course is organised
 
-The course has eight parts. Each part is split into sections, like this one (0a). A section explains the ideas you need, with examples from Threadwork, and ends with **exercises**. The exercises are where you build the app.
+The course has eight parts. Each part is split into sections, like this one (0a). A section explains the ideas you need, with examples from Whybook, and ends with **exercises**. The exercises are where you build the app.
 
 | Part | You learn | You build |
 |---|---|---|
@@ -45,7 +45,7 @@ This runs every test, reads the boxes you ticked, prints your progress and write
 
 ## The app is always running
 
-You don't have to wait until the end to see Threadwork. The finished app's pages are already in the repository. Every part that depends on an exercise you haven't done yet says which exercise it's waiting for:
+You don't have to wait until the end to see Whybook. The finished app's pages are already in the repository. Every part that depends on an exercise you haven't done yet says which exercise it's waiting for:
 
 > **The task list** needs exercise 3.3. Run `npm run ex 3.3`.
 
@@ -100,4 +100,4 @@ This exercise has no automatic tests. Tick it when you've done it (change `[ ]` 
 
 ---
 
-[← Part 0 overview](README.md) · [0b How a web app like Threadwork works →](b-how-threadwork-works.md)
+[← Part 0 overview](README.md) · [0b How a web app like Whybook works →](b-how-whybook-works.md)

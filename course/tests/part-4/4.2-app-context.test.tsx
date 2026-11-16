@@ -61,7 +61,7 @@ describe("4.2 AppProvider / useApp", () => {
     expect(seen.tasks).toEqual([]);
   });
   it("ignores broken saved data", () => {
-    localStorage.setItem("threadwork.state", "{broken");
+    localStorage.setItem("whybook.state", "{broken");
     render(<AppProvider><Probe /></AppProvider>);
     expect(screen.getByText("Tasks: 0")).toBeInTheDocument();
   });

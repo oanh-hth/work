@@ -12,7 +12,7 @@ describe("8.9 WallBoard", () => {
   it("is one button named by what's on it, and opens the app", async () => {
     const onOpen = vi.fn();
     render(<WallBoard notes={notes()} look="cork" onOpen={onOpen} />);
-    const b = screen.getByRole("button", { name: "Open Threadwork: 4 to do, 2 done today" });
+    const b = screen.getByRole("button", { name: "Open Whybook: 4 to do, 2 done today" });
     expect(b).toHaveAttribute("type", "button");
     expect(b).toHaveClass("board");
     expect(b).toHaveAttribute("data-look", "cork");

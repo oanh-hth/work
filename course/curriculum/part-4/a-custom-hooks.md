@@ -28,8 +28,8 @@ Two rules: call hooks only at the top level of a component or hook (never in an 
 `localStorage` stores strings by key, in the browser, across reloads:
 
 ```ts
-localStorage.setItem("threadwork.token", JSON.stringify(token));
-JSON.parse(localStorage.getItem("threadwork.token") ?? "null");
+localStorage.setItem("whybook.token", JSON.stringify(token));
+JSON.parse(localStorage.getItem("whybook.token") ?? "null");
 ```
 
 `useLocalStorage` works like `useState` but also saves. Three details make it solid:

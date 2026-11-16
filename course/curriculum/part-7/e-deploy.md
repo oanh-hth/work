@@ -2,11 +2,11 @@
 
 *[Part 7: Full stack and shipping](README.md) · section e*
 
-Your computer won't always be on. To use Threadwork anywhere, run the server on a machine that is: a hosting service, or a small computer at home. This section explains the options and what to watch for. The exercise is to do it.
+Your computer won't always be on. To use Whybook anywhere, run the server on a machine that is: a hosting service, or a small computer at home. This section explains the options and what to watch for. The exercise is to do it.
 
 ## What "deploying" means here
 
-Threadwork is one Node.js process that serves the built app and the API, and keeps data in a folder:
+Whybook is one Node.js process that serves the built app and the API, and keeps data in a folder:
 
 ```
 npm ci            # install exactly what package-lock.json says
@@ -30,7 +30,7 @@ So any host that runs Node and keeps files between restarts will do.
 
 ## When it's done
 
-Open your address on the iPad, sign in, and add it to the home screen again. Threadwork now works on your iPad, your computer and your phone, synced. You built every part of it.
+Open your address on the iPad, sign in, and add it to the home screen again. Whybook now works on your iPad, your computer and your phone, synced. You built every part of it.
 
 ## Read more
 - Deploying Node apps (Render): <https://render.com/docs/deploy-node-express-app>
@@ -48,7 +48,7 @@ Run the tests for an exercise with `npm run ex <number>`; they re-run every time
 ### 7.6: Deploy it so it works anywhere
 
 
-Deploy Threadwork with HTTPS, a persistent data folder and a fixed `TOKEN_SECRET`. Open it on your iPad, add it to the home screen, and use it for a week. Download a backup at the end of the week.
+Deploy Whybook with HTTPS, a persistent data folder and a fixed `TOKEN_SECRET`. Open it on your iPad, add it to the home screen, and use it for a week. Download a backup at the end of the week.
 
 This exercise has no automatic tests. Tick it when you've done it (change `[ ]` to `[x]`), and `npm run progress` counts it:
 

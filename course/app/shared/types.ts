@@ -1,4 +1,4 @@
-// The Threadwork data model. This file is given: read it in Part 1, don't change it.
+// The Whybook data model. This file is given: read it in Part 1, don't change it.
 
 /** A calendar day as "YYYY-MM-DD". Strings like this compare correctly with < and >. */
 export type Day = string;

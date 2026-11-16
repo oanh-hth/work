@@ -2,7 +2,7 @@
 
 *[Part 3: React components](README.md) · section d*
 
-This is the heart of Threadwork: when a complex task is done, you write down what happened, what you decided, and which topic it belongs to. In this section you build that form.
+This is the heart of Whybook: when a complex task is done, you write down what happened, what you decided, and which topic it belongs to. In this section you build that form.
 
 ## Several fields, one validation
 

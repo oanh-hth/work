@@ -2,7 +2,7 @@
 
 *[Part 7: Full stack and shipping](README.md) · section c*
 
-The first thing you see in Threadwork is the sign-in form. In this section you build it, with the states every async form needs: idle, checking, waiting, error.
+The first thing you see in Whybook is the sign-in form. In this section you build it, with the states every async form needs: idle, checking, waiting, error.
 
 ## Validate before you send
 

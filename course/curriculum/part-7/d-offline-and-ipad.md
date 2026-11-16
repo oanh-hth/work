@@ -2,7 +2,7 @@
 
 *[Part 7: Full stack and shipping](README.md) · section d*
 
-Threadwork should feel like an app on the iPad: an icon on the home screen, full screen, and still working on a plane. That's a **Progressive Web App (PWA)**. In this section you write the caching rule of its service worker, then install it.
+Whybook should feel like an app on the iPad: an icon on the home screen, full screen, and still working on a plane. That's a **Progressive Web App (PWA)**. In this section you write the caching rule of its service worker, then install it.
 
 ## The pieces of a PWA
 
@@ -51,14 +51,14 @@ Run the tests for an exercise with `npm run ex <number>`; they re-run every time
 
 Write `strategyFor(method, url, appOrigin)`: skip non-GET requests, skip `/api/`, network-first for the app's own files, cache-first for Google Fonts, skip everything else.
 
-### 7.5: Install Threadwork on your iPad
+### 7.5: Install Whybook on your iPad
 
 
-Run `npm run build` and `npm start` on your computer. On the iPad, open Safari at your computer's address and port 3001, sign in, then tap **Share → Add to Home Screen**. Open Threadwork from the home screen: it runs full screen. Capture a complex task, record its result and decision, and find it in the decision log.
+Run `npm run build` and `npm start` on your computer. On the iPad, open Safari at your computer's address and port 3001, sign in, then tap **Share → Add to Home Screen**. Open Whybook from the home screen: it runs full screen. Capture a complex task, record its result and decision, and find it in the decision log.
 
 This exercise has no automatic tests. Tick it when you've done it (change `[ ]` to `[x]`), and `npm run progress` counts it:
 
-- [ ] **7.5** Install Threadwork on your iPad
+- [ ] **7.5** Install Whybook on your iPad
 
 ---
 

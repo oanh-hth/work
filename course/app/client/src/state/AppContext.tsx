@@ -18,14 +18,14 @@ export interface AppProviderProps {
 /**
  * Holds the app state with useReducer(rootReducer, ...). rootReducer (given, state/rootReducer.ts) runs your
  * tasksReducer (2.2) and, from Part 8, your stickersReducer.
- * - Initial state: withDefaults(what is saved under storageKey (default "threadwork.state")), or withDefaults(null).
+ * - Initial state: withDefaults(what is saved under storageKey (default "whybook.state")), or withDefaults(null).
  *   withDefaults (given, in state/defaults.ts) fills in fields older saved data doesn't have. Read storage once
  *   with the lazy-init third argument of useReducer. Ignore invalid JSON.
  * - After every change, save the state to localStorage and call onChange(state).
  *   Don't save or call onChange when nothing changed: not on the first render, and not when React runs
  *   effects twice in development (<StrictMode>). Tip: remember the last state you handled in a ref.
  */
-export function AppProvider({ children, storageKey = "threadwork.state", onChange }: AppProviderProps): ReactElement {
+export function AppProvider({ children, storageKey = "whybook.state", onChange }: AppProviderProps): ReactElement {
   // TODO 4.2
   throw new Error("TODO 4.2");
 }

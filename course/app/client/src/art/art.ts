@@ -1,4 +1,4 @@
-// Given: the illustrations for Threadwork: background scenes, stickers and folders. Plain SVG strings, no libraries.
+// Given: the illustrations for Whybook: background scenes, stickers and folders. Plain SVG strings, no libraries.
 // Each scene carries its own <style> with animations, and turns them off under prefers-reduced-motion.
 // Parts that react to your work (Part 9c) have classes styled in styles.css: .sky (time of day), .drink and .steam (work left), .leaf (plants droop when something is overdue).
 

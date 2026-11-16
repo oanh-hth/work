@@ -1,8 +1,8 @@
 {
-  "name": "threadwork-course",
+  "name": "whybook-course",
   "private": true,
   "version": "1.0.0",
-  "description": "Learn TypeScript, React and Node.js by building Threadwork, exercise by exercise.",
+  "description": "Learn TypeScript, React and Node.js by building Whybook, exercise by exercise.",
   "type": "module",
   "engines": {
     "node": ">=20"

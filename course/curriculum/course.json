@@ -13,8 +13,8 @@
         },
         {
           "id": "b",
-          "file": "curriculum/part-0/b-how-threadwork-works.md",
-          "title": "How a web app like Threadwork works"
+          "file": "curriculum/part-0/b-how-whybook-works.md",
+          "title": "How a web app like Whybook works"
         }
       ]
     },
@@ -291,7 +291,7 @@
       "slug": "architecture",
       "title": "Draw the journey of a decision",
       "files": [],
-      "lesson": "curriculum/part-0/b-how-threadwork-works.md",
+      "lesson": "curriculum/part-0/b-how-whybook-works.md",
       "manual": true
     },
     {
@@ -635,7 +635,7 @@
       "part": "7",
       "section": "d",
       "slug": "install-ipad",
-      "title": "Install Threadwork on your iPad",
+      "title": "Install Whybook on your iPad",
       "files": [],
       "lesson": "curriculum/part-7/d-offline-and-ipad.md",
       "manual": true

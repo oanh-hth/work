@@ -1,6 +1,6 @@
 # Part 1: TypeScript and the task model
 
-TypeScript through Threadwork's data: tasks, outcomes and the category list. Types, unions, records, immutable updates, generics and validating data from outside.
+TypeScript through Whybook's data: tasks, outcomes and the category list. Types, unions, records, immutable updates, generics and validating data from outside.
 
 ## Sections
 

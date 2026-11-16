@@ -21,4 +21,4 @@ Tick each box (change `[ ]` to `[x]`) when you can explain it in your own words.
 - [ ] I can explain push, pull and conflict using three timestamps
 - [ ] I can show waiting and error states in an async form
 - [ ] I can explain the parts of a PWA and the three caching strategies
-- [ ] I deployed Threadwork with HTTPS and a persistent data folder
+- [ ] I deployed Whybook with HTTPS and a persistent data folder

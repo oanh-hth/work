@@ -1,11 +1,11 @@
 # Part 0: Fundamentals
 
-How the course works, the tools you need, and how a web app like Threadwork fits together: browser, server, data.
+How the course works, the tools you need, and how a web app like Whybook fits together: browser, server, data.
 
 ## Sections
 
 - **[0a How this course works](a-how-this-course-works.md)** · exercises 0.1, 0.2
-- **[0b How a web app like Threadwork works](b-how-threadwork-works.md)** · exercise 0.3
+- **[0b How a web app like Whybook works](b-how-whybook-works.md)** · exercise 0.3
 
 Read the sections in order. Each ends with its exercises; do them before moving on. `npm run progress` shows where you are.
 

@@ -2,11 +2,11 @@
 
 *[Part 4: State, hooks and navigation](README.md) · section c*
 
-Threadwork has three pages (Tasks, Decisions, Settings) and a search box. In this section you add **navigation** and **debounced search**.
+Whybook has three pages (Tasks, Decisions, Settings) and a search box. In this section you add **navigation** and **debounced search**.
 
 ## Routes in the address
 
-The page should live in the address, so reloading keeps you there and the back button works. Threadwork uses the part after `#`:
+The page should live in the address, so reloading keeps you there and the back button works. Whybook uses the part after `#`:
 
 ```
 http://localhost:5173/#decisions

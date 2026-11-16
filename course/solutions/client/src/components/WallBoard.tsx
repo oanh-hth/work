@@ -7,7 +7,7 @@ export function WallBoard({ notes, look, onOpen }: { notes: BoardNotes; look: "c
   const { open, overdue, doneToday, next } = notes;
   return (
     <button type="button" className="board" data-look={look} onClick={onOpen}
-      aria-label={`Open Threadwork: ${open} to do, ${doneToday} done today`}>
+      aria-label={`Open Whybook: ${open} to do, ${doneToday} done today`}>
       <span className="board-body">
         <span className="b-title">Today</span>
         <span className="b-stats"><b>{open}</b> to do{overdue > 0 && <> · <b className="b-warn">{overdue}</b> overdue</>} · <b>{doneToday}</b> done</span>

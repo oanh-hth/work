@@ -1,4 +1,4 @@
-// Threadwork: tasks, the results of complex ones, and the decisions you make along the way.
+// Whybook: tasks, the results of complex ones, and the decisions you make along the way.
 import * as store from "./store.js";
 import * as auth from "./auth.js";
 import * as cloud from "./cloud.js";
@@ -79,7 +79,7 @@ function renderBoard(){
     <span class="b-stats"><b>${s.open}</b> to do${s.overdue?` · <b class="b-warn">${s.overdue}</b> overdue`:""} · <b>${done}</b> done</span>
     <span class="b-notes">${next.length?next.map((t,i)=>`<span class="b-note" style="--r:${[-3,2,-1][i]}deg">${t.complexity==="complex"?"◆ ":""}${esc(t.title)}</span>`).join(""):`<span class="b-note">All clear ✓</span>`}</span>
     <span class="b-open">Tap to open</span>`;
-  $("#board").setAttribute("aria-label",`Open Threadwork: ${s.open} to do, ${done} done today`);
+  $("#board").setAttribute("aria-label",`Open Whybook: ${s.open} to do, ${done} done today`);
 }
 function openPanel(){
   if(panelOpen) return;
@@ -183,17 +183,17 @@ function showLogin(mode,msg=""){
   const err=`<p class="err" id="auth-err" role="alert">${esc(msg)}</p>`;
   const field=(id,label,type,ac,ph,val="")=>`<div class="stack" style="gap:6px"><label class="label" for="${id}">${label}</label><input class="input" id="${id}" type="${type}" autocomplete="${ac}" placeholder="${ph}" value="${esc(val)}" required></div>`;
   const B={
-    create:`<div><h2>Create your account</h2><p class="muted">Your password locks Threadwork on this device.</p></div>
+    create:`<div><h2>Create your account</h2><p class="muted">Your password locks Whybook on this device.</p></div>
       <form id="auth-create" class="stack" novalidate>${field("a-name","Your name","text","name","What should we call you?")}${field("a-email","Email","email","username","you@example.com")}${field("a-pass","Password","password","new-password","At least 8 characters")}${field("a-pass2","Repeat password","password","new-password","Type it again")}${err}
       <button class="btn primary big" type="submit">Create account</button></form>
-      <p class="proto-note">Already using Threadwork on another device? <button class="linkish" data-auth="cloud-setup">Connect sync instead</button></p>`,
+      <p class="proto-note">Already using Whybook on another device? <button class="linkish" data-auth="cloud-setup">Connect sync instead</button></p>`,
     signin:`<div><h2>Welcome back</h2><p class="muted">Sign in to your tasks and decisions.</p></div>
       <form id="auth-signin" class="stack" novalidate>${field("a-email","Email","email","username","you@example.com",S.profile.email)}${field("a-pass","Password","password","current-password","Your password")}${err}
       <button class="btn primary big" type="submit">Sign in</button></form>
       <p class="proto-note">Forgot your password? It can't be recovered on this device. <button class="linkish" data-auth="reset">Reset this device</button></p>`,
     reset:`<div><h2>Reset this device?</h2><p class="muted">This erases every task, note, sketch and plant stored on this device, then lets you create a new account. If sync is on, your data is still in your account.</p></div>
       ${err}<button class="btn big danger" data-auth="wipe">Erase this device</button><button class="btn ghost" data-auth="signin">Cancel</button>`,
-    cloud:`<div><h2>Sign in to sync</h2><p class="muted">Use the email and password of your Threadwork sync account.</p></div>
+    cloud:`<div><h2>Sign in to sync</h2><p class="muted">Use the email and password of your Whybook sync account.</p></div>
       <form id="auth-cloud" class="stack" novalidate>${field("a-email","Email","email","username","you@example.com",S.profile.email)}${field("a-pass","Password","password","current-password","At least 8 characters")}${err}
       <div class="row"><button class="btn primary big" type="submit" style="flex:1">Sign in</button><button class="btn big" type="button" data-auth="cloud-new" style="flex:1">Create account</button></div></form>
       <p class="proto-note"><button class="linkish" data-auth="forgot">Email me a reset link</button> · <button class="linkish" data-auth="cloud-off">Stop syncing on this device</button></p>`,
@@ -512,7 +512,7 @@ const A={
   "remove-examples":()=>{ S.tasks=S.tasks.filter(t=>!t.sample); save(); render(); toast("Example tasks removed"); },
   "set-theme":d=>{ S.theme=d.v||null; save(); applyTheme(); render(); },
   logout:async()=>{ auth.endSession(); if(cloud.user()) await cloud.signOut(); location.hash=""; location.reload(); },
-  backup:()=>{ download(`threadwork-backup-${today()}.json`,JSON.stringify({app:"threadwork",version:2,exportedAt:new Date().toISOString(),state:S}),"application/json"); toast("Backup downloaded"); },
+  backup:()=>{ download(`whybook-backup-${today()}.json`,JSON.stringify({app:"whybook",version:2,exportedAt:new Date().toISOString(),state:S}),"application/json"); toast("Backup downloaded"); },
   "restore-yes":()=>{ if(!restoreData) return; S=normalize(restoreData); S.savedAt=Date.now(); restoreData=null; applyPrefs(); save(); render(); toast("Backup restored"); },
   "restore-no":()=>{ restoreData=null; render(); },
   "cloud-off":async()=>{ if(cloud.user()) await cloud.signOut(); cloud.setConfig(null); auth.startSession(S.profile.email||"me"); location.reload(); },
@@ -531,7 +531,7 @@ document.addEventListener("change",e=>{
   if(el.id==="backdrop-pick"){ S.backdrop=el.value; save(); applyBackdrop(); if(panelOpen) render(); return; }
   if(el.id==="o-category"&&recording){ const t=S.tasks.find(x=>x.id===recording), box=$("#o-related"); if(t&&box) box.innerHTML=relatedHtml(t,el.value); return; }
   if(el.id==="f-category"){ filter.category=el.value||null; refreshDecisions(); }
-  else if(el.id==="restore-file"&&el.files[0]){ el.files[0].text().then(t=>{ try{ const d=JSON.parse(t); if(d.app!=="threadwork"||!d.state) throw 0; restoreData=d.state; $("#restore-confirm").innerHTML=`<p>Replace everything with the backup from <b>${esc((d.exportedAt||"").slice(0,10))}</b> (${d.state.tasks?.length||0} tasks)?</p><div class="row"><button class="btn primary" data-act="restore-yes">Replace</button><button class="btn ghost" data-act="restore-no">Cancel</button></div>`; }catch(x){ toast("That file isn't a Threadwork backup."); } }); }
+  else if(el.id==="restore-file"&&el.files[0]){ el.files[0].text().then(t=>{ try{ const d=JSON.parse(t); if(!["whybook","threadwork"].includes(d.app)||!d.state) throw 0; /* "threadwork": backups made before the rename */ restoreData=d.state; $("#restore-confirm").innerHTML=`<p>Replace everything with the backup from <b>${esc((d.exportedAt||"").slice(0,10))}</b> (${d.state.tasks?.length||0} tasks)?</p><div class="row"><button class="btn primary" data-act="restore-yes">Replace</button><button class="btn ghost" data-act="restore-no">Cancel</button></div>`; }catch(x){ toast("That file isn't a Whybook backup."); } }); }
 });
 document.addEventListener("input",e=>{
   if(e.target.id==="f-text"){ filter.text=e.target.value; clearTimeout(searchT); searchT=setTimeout(()=>{ const l=$("#decision-list"); if(l) l.innerHTML=decisionList(); },250); }

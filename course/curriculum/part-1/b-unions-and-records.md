@@ -2,7 +2,7 @@
 
 *[Part 1: TypeScript and the task model](README.md) · section b*
 
-Every decision you record goes into a **category**: a web development topic. In this section you meet TypeScript's tools for fixed sets of values (**union types**, **`as const`**, **`Record`**) by working with Threadwork's category list.
+Every decision you record goes into a **category**: a web development topic. In this section you meet TypeScript's tools for fixed sets of values (**union types**, **`as const`**, **`Record`**) by working with Whybook's category list.
 
 ## Union types
 

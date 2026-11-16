@@ -2,7 +2,7 @@
 
 *[Part 1: TypeScript and the task model](README.md) · section c*
 
-Ticking a task, recording a decision, reopening, deleting: these are Threadwork's everyday changes. In this section you write them **without mutating** anything, the single most important habit for React.
+Ticking a task, recording a decision, reopening, deleting: these are Whybook's everyday changes. In this section you write them **without mutating** anything, the single most important habit for React.
 
 ## What mutation is
 

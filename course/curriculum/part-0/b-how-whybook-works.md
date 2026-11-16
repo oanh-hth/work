@@ -1,12 +1,12 @@
-# Part 0b: How a web app like Threadwork works
+# Part 0b: How a web app like Whybook works
 
 *[Part 0: Fundamentals](README.md) · section b*
 
-Before writing code, it helps to know what the pieces of a web app are and how they talk. Threadwork has the same shape as most modern web apps.
+Before writing code, it helps to know what the pieces of a web app are and how they talk. Whybook has the same shape as most modern web apps.
 
 ## The browser runs the app
 
-When you open Threadwork, the browser downloads HTML (an almost empty page), **JavaScript** (the program: React builds every button and list), and CSS (how it looks). This is a **single-page application**. The page loads once; moving from *Tasks* to *Decisions* only changes the part after the `#` in the address, and JavaScript swaps what's on the screen.
+When you open Whybook, the browser downloads HTML (an almost empty page), **JavaScript** (the program: React builds every button and list), and CSS (how it looks). This is a **single-page application**. The page loads once; moving from *Tasks* to *Decisions* only changes the part after the `#` in the address, and JavaScript swaps what's on the screen.
 
 ## We write TypeScript, the browser runs JavaScript
 
@@ -34,7 +34,7 @@ Some rules matter on both sides. "An outcome needs a result, a decision and a re
 
 ## The data
 
-Everything Threadwork knows fits in one object:
+Everything Whybook knows fits in one object:
 
 ```ts
 interface Task {

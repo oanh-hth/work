@@ -42,4 +42,4 @@ const app = createApp(a => {
   }
 });
 
-app.listen(port, () => console.log(`Threadwork server on http://localhost:${port}`));
+app.listen(port, () => console.log(`Whybook server on http://localhost:${port}`));

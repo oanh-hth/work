@@ -1,6 +1,6 @@
 {
-  "name": "Threadwork",
-  "short_name": "Threadwork",
+  "name": "Whybook",
+  "short_name": "Whybook",
   "description": "A todo list that remembers what you learned: results and decisions, filed by web development topic.",
   "start_url": "./index.html",
   "scope": "./",

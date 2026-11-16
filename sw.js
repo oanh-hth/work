@@ -1,5 +1,5 @@
-// Offline support for Threadwork. Network first so updates appear; cache as the fallback.
-const CACHE = 'threadwork-v11';
+// Offline support for Whybook. Network first so updates appear; cache as the fallback.
+const CACHE = 'threadwork-v12';   // prefix kept from the app's first name so old caches are still cleaned up
 const FILES = ['./', 'index.html', 'styles.css', 'manifest.webmanifest',
   'js/app.js', 'js/logic.js', 'js/art.js', 'js/categories.js', 'js/store.js', 'js/db.js', 'js/auth.js', 'js/cloud.js',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];

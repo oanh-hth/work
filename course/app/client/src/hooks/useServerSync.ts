@@ -4,7 +4,7 @@ import type { Api } from "@app/client/src/api/client";
 import type { AppState } from "@app/shared/types";
 import { debounce, decideSync } from "@app/shared/sync";
 
-const META = "threadwork.sync";
+const META = "whybook.sync";
 interface Meta { localSavedAt: number; lastSyncedAt: number }
 const readMeta = (): Meta => { try { return { localSavedAt: 0, lastSyncedAt: 0, ...JSON.parse(localStorage.getItem(META) ?? "{}") }; } catch { return { localSavedAt: 0, lastSyncedAt: 0 }; } };
 const writeMeta = (m: Meta) => { try { localStorage.setItem(META, JSON.stringify(m)); } catch { /* ignore */ } };

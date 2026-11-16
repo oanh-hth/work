@@ -14,7 +14,7 @@ export function SettingsView({ onSignOut, syncText, backdrop, onBackdrop }: { on
       <ErrorBoundary area="The theme picker"><ThemePicker value={backdrop} onChange={onBackdrop} /></ErrorBoundary>
       <h2>Your data</h2>
       <p>{syncText}</p>
-      <div><button onClick={() => download(`threadwork-backup-${todayKey()}.json`, JSON.stringify({ app: "threadwork", exportedAt: new Date().toISOString(), state }), "application/json")}>Download a backup</button></div>
+      <div><button onClick={() => download(`whybook-backup-${todayKey()}.json`, JSON.stringify({ app: "whybook", exportedAt: new Date().toISOString(), state }), "application/json")}>Download a backup</button></div>
       <h2>Account</h2>
       <div><button onClick={onSignOut}>Sign out</button></div>
     </section>

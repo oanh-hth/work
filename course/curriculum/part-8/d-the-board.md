@@ -35,7 +35,7 @@ This is a pure function, `placeBoard(spot, viewport, headerHeight)`, with no DOM
 
 The board does one thing, opening the app, so it's **one `<button>`**: one tab stop, Enter and Space work, and screen readers announce it. Two consequences:
 
-- **Name it by what it does and shows**: `aria-label="Open Threadwork: 4 to do, 2 done today"`. Without it, a screen reader would read every note on it as one long name.
+- **Name it by what it does and shows**: `aria-label="Open Whybook: 4 to do, 2 done today"`. Without it, a screen reader would read every note on it as one long name.
 - **Only phrasing content inside.** A button may contain text and inline elements like `<span>` and `<b>`, not `<div>`, `<p>` or headings. Make the layout with `<span>`s and CSS (`display: flex` works on any element).
 
 The look is all CSS, chosen with a data attribute: `data-look="chalk"` or `"cork"`. Paper notes on the corkboard get a pin from a `::before` circle and a tilt from a CSS variable, like the notes in 8c: `style={{ "--r": "-3deg" }}` with `transform: rotate(var(--r))`. Under `prefers-reduced-motion` the hover tilt is turned off.
@@ -62,7 +62,7 @@ Write `placeBoard(spot, viewport, headerHeight)`: map the spot from scene to scr
 
 **Edit:** `app/client/src/components/WallBoard.tsx` · **Tests:** `tests/part-8/8.9-wall-board.test.tsx` · **Run:** `npm run ex 8.9`
 
-Build `WallBoard`: one button named "Open Threadwork: 4 to do, 2 done today", with a `data-look`, the title, the counts, a tilted note per next task (◆ for complex ones) or "All clear ✓", and "Tap to open". Then run `npm run dev`, pick the coffee shop, and resize the window: the board should stay on the wall.
+Build `WallBoard`: one button named "Open Whybook: 4 to do, 2 done today", with a `data-look`, the title, the counts, a tilted note per next task (◆ for complex ones) or "All clear ✓", and "Tap to open". Then run `npm run dev`, pick the coffee shop, and resize the window: the board should stay on the wall.
 
 ---
 

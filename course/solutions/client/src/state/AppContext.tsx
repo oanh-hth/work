@@ -22,7 +22,7 @@ function load(key: string): AppState {
   }
 }
 
-export function AppProvider({ children, storageKey = "threadwork.state", onChange }: AppProviderProps) {
+export function AppProvider({ children, storageKey = "whybook.state", onChange }: AppProviderProps) {
   const [state, dispatch] = useReducer(rootReducer, storageKey, load);
   const lastSaved = useRef(state);          // the state we already know about
   const changed = useRef(onChange);

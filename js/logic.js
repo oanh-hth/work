@@ -103,7 +103,7 @@ export function decisionsToMarkdown(decisions) {
   return lines.join("\n").replace(/\n+$/, "") + "\n";
 }
 
-/** Older Threadwork data (tasks with importance and inbox/doing/done) becomes simple tasks. */
+/** Older Whybook data (tasks with importance and inbox/doing/done) becomes simple tasks. */
 export function migrateTasks(tasks = []) {
   return tasks.map(t => ("complexity" in t ? t : {
     id: t.id, title: t.title || "Untitled task", complexity: "simple", status: t.status === "done" ? "done" : "todo",

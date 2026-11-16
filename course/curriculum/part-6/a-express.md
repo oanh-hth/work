@@ -2,7 +2,7 @@
 
 *[Part 6: A Node.js server](README.md) · section a*
 
-So far Threadwork lives in one browser. To use it on your iPad **and** your computer, your data needs a home both can reach: a server. Part 6 builds it with **Node.js** and **Express**.
+So far Whybook lives in one browser. To use it on your iPad **and** your computer, your data needs a home both can reach: a server. Part 6 builds it with **Node.js** and **Express**.
 
 ## Node.js
 

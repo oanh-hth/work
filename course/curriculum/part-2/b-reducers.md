@@ -2,7 +2,7 @@
 
 *[Part 2: The app's logic: dates, a reducer and queries](README.md) · section b*
 
-Every change in Threadwork goes through one function, the **reducer**. In this section you write it, using everything from Part 1.
+Every change in Whybook goes through one function, the **reducer**. In this section you write it, using everything from Part 1.
 
 ## Actions
 
